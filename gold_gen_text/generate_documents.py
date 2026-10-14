@@ -524,9 +524,9 @@ def build_doc_prompt(style_key, chains, extra_edges, node_desc, alias_dict,
                        f"{max_words-100} and {max_words+100} words. "
                        f"Focused section, not an exhaustive manual. Be brief in reasoning.")
     else:
-        length_rule = ("NO WORD LIMIT. Write a complete, coherent document that "
-                       "naturally covers every chain plus the false claims, "
-                       "without padding.")
+        length_rule = ("about 400 words -- aim to keep the body between 300 and "
+                       "500 words (guidance only; there is no hard limit). Cover "
+                       "every chain plus the false claims naturally, without padding")
     alias_schema = (', "aliases": [{"canonical": "A", "surface": "phrase written"}]'
                      if variant_level >= 1 else '')
     return f"""You are a technical writer producing ONE document in this style: {style['label']}.
