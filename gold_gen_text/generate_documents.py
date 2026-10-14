@@ -551,8 +551,8 @@ RULES (very important):
 3. REALISM / NOISE: (a) include about {irr_pct}% non-causal background sentences
    (context, measurements, procedures) that carry NO causal claim; (b) plant the
    false statements above in a natural, unmarked way.
-4. LENGTH (strict): the body must be AT MOST {max_words} WORDS. Focused section,
-   not an exhaustive manual. Be brief in reasoning.
+4. LENGTH (target): about {max_words} WORDS -- keep the body between {max_words-100} and {max_words+100} words.
+   Focused section, not an exhaustive manual. Be brief in reasoning.
 5. Output ONLY a JSON object (no prose around it) with this exact schema:
 {{"title": "string", "body": "full document text"{alias_schema}}}
 """
@@ -692,6 +692,8 @@ def main(argv=None):
                 prompt, encoding="utf-8")
 
             shorten_tries = 0
+            _lo = max(50, args.max_words - 100)
+            _hi = args.max_words + 100
             if args.dry_run:
                 llm = {"title": f"{dag_name} {style_key} document {d+1}",
                        "body": "(dry-run: LLM not called)"}
@@ -701,13 +703,13 @@ def main(argv=None):
                 raw = chat_text(args, [{"role": "user", "content": prompt}], log_path=log_path)
                 llm = extract_json(raw, log_path=log_path)
                 body = llm.get("body", "")
-                if count_words(body) > args.max_words:
+                if count_words(body) > _hi:
                     shorten_tries = 1
-                    log_line(log_path, f"[doc {d+1}] {count_words(body)} words > {args.max_words}; "
+                    log_line(log_path, f"[doc {d+1}] {count_words(body)} words > {_hi}; "
                                        f"one auto-shorten pass")
                     follow = (f"Your previous draft had {count_words(body)} words. Rewrite the SAME "
                               f"content (title, every chain link, every planted false claim) so the "
-                              f"body has AT MOST {args.max_words} words, keeping identical terminology. "
+                              f"body has between {_lo} and {_hi} words, keeping identical terminology. "
                               f"Return the same JSON schema, JSON only.")
                     raw2 = chat_text(args, [{"role": "user", "content": prompt},
                                             {"role": "assistant", "content": raw},
@@ -720,8 +722,8 @@ def main(argv=None):
                     else:
                         log_line(log_path, f"[doc {d+1}] shorten pass not better; keeping first draft")
                 log_line(log_path, f"[doc {d+1}] parsed OK title={llm.get('title', '')[:80]!r} "
-                                   f"words={count_words(llm.get('body', ''))}/{args.max_words} "
-                                   f"shorten_tries={shorten_tries}")
+                                   f"words={count_words(llm.get('body', ''))} "
+                                   f"(target {_lo}-{_hi}) shorten_tries={shorten_tries}")
                 time.sleep(0.5)
 
             doc_path = input_dir / f"{d+1:02d}_{style_key}.json"
