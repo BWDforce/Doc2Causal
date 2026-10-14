@@ -36,6 +36,7 @@ import argparse
 import json
 import os
 import re
+import time
 import sys
 from collections import Counter
 from datetime import datetime
@@ -567,9 +568,21 @@ def main() -> int:
         print(f"\n{'='*60}\nDocument {i}/{len(docs)}: {path.name}\n{'='*60}")
         source_text, _ = lang2.pipeline.load_source_document(path)
 
-        lang_document = lang2.pipeline.run_langextract(
-            source_text=source_text, api_key=args.api_key, model_id=args.model,
-            base_url=args.base_url, extraction_passes=args.extraction_passes, max_char_buffer=1800)
+        lang_document = None
+        for _lxtry in (1, 2):
+            try:
+                lang_document = lang2.pipeline.run_langextract(
+                    source_text=source_text, api_key=args.api_key, model_id=args.model,
+                    base_url=args.base_url, extraction_passes=args.extraction_passes,
+                    max_char_buffer=1800)
+                break
+            except Exception as exc:  # noqa: BLE001 - relay/OpenAI-layer flakiness
+                print(f"[LangExtract] attempt {_lxtry} failed: {type(exc).__name__}: {exc}")
+                if _lxtry == 1:
+                    print("[LangExtract] retrying once with the same request ...")
+                    time.sleep(5)
+                    continue
+                raise
         grounded = lang2.pipeline.grounded_extractions(lang_document)
         pre_context = lang2.pipeline.format_langextract_context(grounded)
         pre_graph = lang2.pipeline.build_pre_graph(grounded)
