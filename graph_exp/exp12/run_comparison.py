@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""exp12: discovery vs lang5_evo on gen2 gold-DAG corpora, 4+1 incremental, n=3.
+"""exp12: discovery vs lang5_evo on gen3 gold-DAG corpora (moderate synonym variants), 4+1 incremental, n=1 per corpus.
 
-Corpora: data/Test-text/input/goldgen_gen2/{water,win95pts,alarm} (5 docs each).
-Gold/metadata: gold_gen_text/output_gen2/<corpus>/seed1/{manifest.json,extract_theme.txt}.
+Corpora: data/Test-text/input/goldgen_gen3/{water,win95pts,alarm} (5 docs each, moderate synonym variants).
+Gold/metadata: gold_gen_text/output_gen3/<corpus>/seed1/{manifest.json,extract_theme.txt}.
 
 Pipelines:
   - discovery  : multi_extract/run_multi_discovery.py (original RAG discovery)
@@ -54,8 +54,8 @@ import networkx as nx
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 MULTI_EXTRACT_DIR = PROJECT_ROOT / "multi_extract"
 EXP11_DIR = PROJECT_ROOT / "graph_exp" / "exp11"
-META_ROOT = PROJECT_ROOT / "gold_gen_text" / "output_gen2"
-INPUT_GEN2 = PROJECT_ROOT / "data" / "Test-text" / "input" / "goldgen_gen2"
+META_ROOT = PROJECT_ROOT / "gold_gen_text" / "output_gen3"
+INPUT_GEN2 = PROJECT_ROOT / "data" / "Test-text" / "input" / "goldgen_gen3"
 DISCOVERY_RUNNER = MULTI_EXTRACT_DIR / "run_multi_discovery.py"
 LANG5_EVO_RUNNER = MULTI_EXTRACT_DIR / "lang5_evo" / "run_extract.py"
 DEFAULT_BASE_DIR = Path(__file__).resolve().parent / "results"
@@ -71,7 +71,7 @@ _spec.loader.exec_module(rc11)  # reuses align_node / token helpers
 
 def parse_args(argv=None):
     p = argparse.ArgumentParser(description="exp12: discovery vs lang5_evo, 4+1 incremental, n=3.")
-    p.add_argument("--n", type=int, default=3)
+    p.add_argument("--n", type=int, default=1)
     p.add_argument("--base-dir", type=Path, default=DEFAULT_BASE_DIR)
     p.add_argument("--corpus", default=None, help="Only run this corpus (water|win95pts|alarm).")
     p.add_argument("--python", type=Path, default=None)
@@ -84,6 +84,10 @@ def parse_args(argv=None):
     p.add_argument("--extraction-passes", type=int, default=1)
     p.add_argument("--propagate-threshold", type=float, default=0.2)
     p.add_argument("--timeout", type=float, default=3600.0)
+    p.add_argument("--corpus-root", type=Path, default=None,
+                   help="Override input corpus parent (default: data/Test-text/input/goldgen_gen3).")
+    p.add_argument("--meta-root", type=Path, default=None,
+                   help="Override manifest parent (default: gold_gen_text/output_gen3).")
     p.add_argument("--skip-discovery", action="store_true")
     p.add_argument("--skip-lang5", action="store_true")
     p.add_argument("--evaluate-only", action="store_true")
@@ -99,8 +103,9 @@ def latest_gml(run_dir: Path) -> Optional[Path]:
     return files[-1] if files else None
 
 
-def load_manifest(corpus: str):
-    mf = json.loads((META_ROOT / corpus / "seed1" / "manifest.json").read_text(encoding="utf-8"))
+def load_manifest(corpus: str, meta_root: Path = None):
+    root = meta_root or META_ROOT
+    mf = json.loads((root / corpus / "seed1" / "manifest.json").read_text(encoding="utf-8"))
     return mf
 
 
@@ -113,8 +118,8 @@ def build_alias_map(mf):
     return alias_map
 
 
-def prep_inputs(corpus: str, base_dir: Path):
-    src = INPUT_GEN2 / corpus
+def prep_inputs(corpus: str, base_dir: Path, corpus_root: Path = None):
+    src = (corpus_root or INPUT_GEN2) / corpus
     top4 = base_dir / "_inputs" / corpus / "top4"
     doc05 = base_dir / "_inputs" / corpus / "doc05"
     shutil.rmtree(top4, ignore_errors=True)
@@ -225,7 +230,7 @@ def evaluate_run(mf, gml_path, phase0: bool):
 
 def read_sidecars(run_dir: Path):
     out = {"conflicts": 0, "decycle": 0, "merge_merged": 0,
-           "merge_protected": 0, "merge_loops": 0, "merge_mode": "?"}
+           "merge_protected": 0, "merge_pattern": 0, "merge_loops": 0, "merge_mode": "?"}
     for path, key in ((run_dir / "conflicts.json", "conflicts"),
                       (run_dir / "decycle.json", "decycle")):
         if path.exists():
@@ -241,6 +246,7 @@ def read_sidecars(run_dir: Path):
             s = d.get("stats", {})
             out["merge_merged"] = s.get("merged", 0)
             out["merge_protected"] = s.get("protected_numeric", 0)
+            out["merge_pattern"] = s.get("protected_pattern", 0)
             out["merge_loops"] = s.get("self_loops_removed", 0)
             out["merge_mode"] = s.get("mode", "?")
         except Exception:
@@ -273,6 +279,8 @@ def build_summary(args, corpora):
     summary = {
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "n": args.n,
+        "corpus_root": str(getattr(args, "corpus_root", None) or INPUT_GEN2),
+        "meta_root": str(getattr(args, "meta_root", None) or META_ROOT),
         "temperature": args.temperature,
         "merge_threshold": args.merge_threshold,
         "propagate_threshold": args.propagate_threshold,
@@ -283,7 +291,7 @@ def build_summary(args, corpora):
         "corpora": {},
     }
     for corpus in corpora:
-        mf = load_manifest(corpus)
+        mf = load_manifest(corpus, meta_root=getattr(args, "meta_root", None))
         alias_map = build_alias_map(mf)
         gold_edges = set(tuple(e) for e in mf["gold_edges"])
         horizon = set()
@@ -353,7 +361,7 @@ def write_summary(summary, base_dir):
           f"- generated: {summary['generated_at']}", "",
           "Evaluation: edge P/R/F1 vs FULL gold; phase0 additionally horizon recall vs planted docs 01-04;",
           "spurious_hit X/Y = gen2 deterministic bait taken; DAG/conflicts/decycle/merge from sidecars.", "",
-          "| corpus | pipeline | phase | ok | P (mean±sd) | R | F1 | horizonR | spurious | decycle | merged | prot |", "|---|---|---|---|---|---|---|---|---|---|---|---|"]
+          "| corpus | pipeline | phase | ok | P (mean±sd) | R | F1 | horizonR | spurious | decycle | merged | prot | protP |", "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for cname, c in summary["corpora"].items():
         for pipe, agg in c["rows"].items():
             for ph in ("phase0", "phase1"):
@@ -365,6 +373,7 @@ def write_summary(summary, base_dir):
                 dc = [s["decycle"] for s in sc]
                 mg = [s["merge_merged"] for s in sc]
                 pt = [s["merge_protected"] for s in sc]
+                pp = [s["merge_pattern"] for s in sc]
                 md.append(
                     f"| {cname} | {pipe} | {ph} | {a['runs']}/{summary['n']} | "
                     f"{a['precision_mean']:.3f}±{a['precision_std']:.3f} | "
@@ -372,7 +381,7 @@ def write_summary(summary, base_dir):
                     f"{a['f1_mean']:.3f}±{a['f1_std']:.3f} | "
                     f"{a['horizon_recall_mean']:.3f} | "
                     f"{a['torun']}/{a['to_planted']} | "
-                    f"{sum(dc)} | {sum(mg)} | {sum(pt)} |")
+                    f"{sum(dc)} | {sum(mg)} | {sum(pt)} | {sum(pp)} |")
             if agg.get("deltas"):
                 d_ = agg["deltas"]
                 md.append(f"| {cname} | {pipe} | Δ(0->1) | - | added {d_['added_edges_mean']}±{d_['added_edges_std']} | "
@@ -388,9 +397,9 @@ def run(args):
     if not args.api_key:
         raise SystemExit("Set DEEPSEEK_API_KEY or pass --api-key.")
     for corpus in corpora:
-        mf = load_manifest(corpus)
+        mf = load_manifest(corpus, meta_root=args.meta_root)
         theme = mf["theme"]["extract_theme"]
-        top4, doc05 = prep_inputs(corpus, args.base_dir)
+        top4, doc05 = prep_inputs(corpus, args.base_dir, corpus_root=args.corpus_root)
         for pipeline, skip in (("discovery", args.skip_discovery),
                                ("lang5_evo", args.skip_lang5)):
             if skip:
@@ -422,7 +431,7 @@ def run(args):
                     continue
                 print(f"--- run {ri}/{args.n} phase1 ---")
                 if pipeline == "discovery":
-                    cmd1 = [python, str(runner), "--input-dir", str(INPUT_GEN2 / corpus),
+                    cmd1 = [python, str(runner), "--input-dir", str((args.corpus_root or INPUT_GEN2) / corpus),
                             "--output-dir", str(p1), "--model-base", args.model,
                             "--base-url", args.base_url, "--temperature", str(args.temperature),
                             "--max-docs", "5"]

@@ -166,7 +166,7 @@ DEFAULT_THEME = {
 def parse_args(argv=None):
     p = argparse.ArgumentParser(description="LLM document generator from gold DAGs.")
     p.add_argument("--dag", default="water",
-                   help="DAG name in gold_DAG/ (or 'all'). Style is auto-selected by theme.")
+                   help="DAG name in gold_DAG/, or comma-separated list e.g. 'water,win95pts,alarm', or 'all'.")
     p.add_argument("--n-docs", type=int, default=4)
     p.add_argument("--seed", type=int, default=1)
     p.add_argument("--temperature", type=float, default=0.8)
@@ -193,6 +193,11 @@ def parse_args(argv=None):
                    help="Sub-folder name under --input-parent; {dag} and {seed} are substituted.")
     p.add_argument("--alias-dict", action=argparse.BooleanOptionalAction, default=True,
                    help="Build a closed alias vocabulary; documents may only use it (gen2).")
+    p.add_argument("--variant-level", type=int, default=0, choices=(0, 1),
+                   help="0 = gen2 closed vocabulary (exact phrases only); "
+                        "1 = gen3 moderate synonymy: base wording from the vocabulary, "
+                        "but light grammatical variants / anaphora allowed and every "
+                        "written surface form must be reported in the aliases output.")
     p.add_argument("--dry-run", action="store_true")
     return p.parse_args(argv)
 
@@ -401,7 +406,8 @@ def alias_entries_for(varset, alias_dict):
 
 
 def build_doc_prompt(style_key, chains, extra_edges, node_desc, alias_dict,
-                     spurious_pairs, irr_ratio, max_words, used_in_doc):
+                     spurious_pairs, irr_ratio, max_words, used_in_doc,
+                     variant_level=0):
     style = STYLES[style_key]
     chain_lines = [f"{i+1}. " + " -> ".join(f"{n} ({node_desc.get(n, n)})" for n in path)
                    for i, path in enumerate(chains)]
@@ -418,13 +424,27 @@ def build_doc_prompt(style_key, chains, extra_edges, node_desc, alias_dict,
                 surfs = [node_desc.get(v, v) + " (natural phrase)"]
             vocab_lines.append(f"- {v} ({node_desc.get(v, v)}): " + " | ".join(surfs))
         vocab_block = ("\n".join(vocab_lines) if vocab_lines else "- (none)")
-        vocab_rule = (
-            "CLOSED VOCABULARY (very important): the table below is the ONLY wording "
-            "you are allowed to use for each variable. Every mention of a variable "
-            "in the body MUST be one of its listed phrases verbatim. Do NOT invent "
-            "any other paraphrase, do NOT shorten or extend a listed phrase, and do "
-            "NOT write the raw canonical code anywhere in the document.\n" + vocab_block
-        )
+        if variant_level == 0:
+            vocab_rule = (
+                "CLOSED VOCABULARY (very important): the table below is the ONLY wording "
+                "you are allowed to use for each variable. Every mention of a variable "
+                "in the body MUST be one of its listed phrases verbatim. Do NOT invent "
+                "any other paraphrase, do NOT shorten or extend a listed phrase, and do "
+                "NOT write the raw canonical code anywhere in the document.\n" + vocab_block
+            )
+        else:
+            vocab_rule = (
+                "BASE VOCABULARY (very important): the table below gives the base wording "
+                "for each variable. Most mentions should use a listed phrase VERBATIM. "
+                "Moderate NATURAL VARIATION IS ALLOWED, e.g. reordering ('the 12:15 BOD "
+                "reading'), a light anaphoric form ('this reading', 'that value'), or a "
+                "grammatical variant ('quarter-past sample'). When you vary: keep the "
+                "distinctive content words of the listed phrase; never replace the "
+                "parameter/chemical term with a DIFFERENT technical term; never drop or "
+                "change the sampling time; and for EVERY distinct surface form you "
+                "actually write, add one pair to the aliases array of the JSON output. "
+                "Never write the raw canonical code anywhere in the document.\n" + vocab_block
+            )
     else:
         vocab_rule = (
             "ANTI LEAKAGE: do NOT use the exact variable names above. Refer to each "
@@ -439,6 +459,8 @@ def build_doc_prompt(style_key, chains, extra_edges, node_desc, alias_dict,
     ] or ["- <none>"]
     spurious_block = ("\n".join(spurious_lines))
 
+    alias_schema = (', "aliases": [{"canonical": "A", "surface": "phrase written"}]'
+                     if variant_level == 1 else '')
     return f"""You are a technical writer producing ONE document in this style: {style['label']}.
 
 STYLE GUIDANCE:
@@ -473,7 +495,7 @@ RULES (very important):
 4. LENGTH (strict): the body must be AT MOST {max_words} WORDS. Focused section,
    not an exhaustive manual. Be brief in reasoning.
 5. Output ONLY a JSON object (no prose around it) with this exact schema:
-{{"title": "string", "body": "full document text"}}
+{{"title": "string", "body": "full document text"{alias_schema}}}
 """
 
 
@@ -489,8 +511,12 @@ def main(argv=None):
     if not args.dry_run and not args.api_key:
         raise SystemExit("Set GLM_API_KEY or pass --api-key (or use --dry-run).")
 
-    dag_names = (sorted(p.stem for p in GOLD_DAG_DIR.glob("*.json"))
-                 if args.dag == "all" else [args.dag])
+    if args.dag == "all":
+        dag_names = sorted(p.stem for p in GOLD_DAG_DIR.glob("*.json"))
+    elif "," in args.dag:
+        dag_names = [x.strip() for x in args.dag.split(",") if x.strip()]
+    else:
+        dag_names = [args.dag]
 
     for dag_name in dag_names:
         gold_file = GOLD_DAG_DIR / f"{dag_name}.json"
@@ -578,7 +604,8 @@ def main(argv=None):
 
             prompt = build_doc_prompt(style_key, doc_paths, doc_extra, node_desc,
                                       alias_dict, spurious_pairs, args.irrelevant_ratio,
-                                      args.max_words, doc_vars)
+                                      args.max_words, doc_vars,
+                                      variant_level=args.variant_level)
             (meta_out / "prompts" / f"doc_{d+1:02d}_{style_key}.txt").write_text(
                 prompt, encoding="utf-8")
 
@@ -621,6 +648,14 @@ def main(argv=None):
                 ensure_ascii=False, indent=2), encoding="utf-8")
 
             alias_entries = alias_entries_for(doc_vars, alias_dict)
+            if args.variant_level == 1:
+                seen_surfaces = {(a["canonical"], a["surface"]) for a in alias_entries}
+                for a in llm.get("aliases", []) or []:
+                    if isinstance(a, dict) and a.get("canonical") in doc_vars and a.get("surface"):
+                        key = (a["canonical"], a["surface"])
+                        if key not in seen_surfaces:
+                            alias_entries.append({"canonical": a["canonical"], "surface": a["surface"]})
+                            seen_surfaces.add(key)
             manifest_docs.append({
                 "file": doc_path.name, "style": style_key,
                 "assigned_chain_ids": [cid for cid, _ in doc_chains],
@@ -640,6 +675,7 @@ def main(argv=None):
             "alias_mode": alias_mode if not args.dry_run else "dry-run",
             "context_window": args.context_window,
             "max_words": args.max_words,
+            "variant_level": args.variant_level,
             "spurious_policy": ("deterministic; excludes reverse gold edges and path-related pairs; "
                                 "no wrong-direction bait"),
             "theme": {"id": dag_name, "label": theme["label"],

@@ -12,6 +12,10 @@ Evolved post-processing (this is the "latest version" pipeline used by exp12):
      - numeric/timestamp protection: two names that differ ONLY in numeric
        tokens (e.g. "... at 12:15" vs "... at 12:30", "pump A1" vs "pump A2")
        are NEVER merged, no matter the token overlap;
+     - slot-pattern protection: names that fit the same word-slot pattern and
+       differ by exactly ONE content word (e.g. "dissolved ... level" vs
+       "total ... level" at the same timestamp, "inlet" vs "outlet" pressure)
+       are NEVER merged -- the difference is systematic, not synonym noise;
      - representative = longest name; attributes/values merged; parallel edges
        deduplicated by confidence; self-loops produced by merging are removed.
      Merge statistics are written to ``merge_stats.json``.
@@ -357,6 +361,31 @@ def _edge_quality(data) -> int:
     return q
 
 
+_SLOT_STOP = {"the", "a", "an", "of", "at", "in", "on", "for", "to", "with", "and"}
+
+
+def _slot_words(name: str):
+    return [w for w in re.findall(r"[a-z]+", str(name).lower())
+            if w not in _SLOT_STOP and len(w) > 1]
+
+
+def _slot_pattern_protected(a, b) -> bool:
+    """Protect pairs that are the same word pattern differing by exactly one
+    content word (systematic modifier difference, e.g. dissolved vs total)."""
+    wa, wb = _slot_words(a), _slot_words(b)
+    if not wa or not wb:
+        return False
+    i = 0
+    while i < min(len(wa), len(wb)) and wa[i] == wb[i]:
+        i += 1
+    j = 0
+    while j < min(len(wa) - i, len(wb) - i) and wa[-1 - j] == wb[-1 - j]:
+        j += 1
+    ra = wa[i:len(wa) - j] if j else wa[i:]
+    rb = wb[i:len(wb) - j] if j else wb[i:]
+    return len(ra) == 1 and len(rb) == 1 and ra[0] != rb[0]
+
+
 def _non_numeric_tokens(name: str) -> str:
     """Fingerprint of the non-numeric content tokens of a name."""
     toks = re.findall(r"[A-Za-z0-9]+", str(name).lower())
@@ -371,7 +400,8 @@ def _non_numeric_tokens(name: str) -> str:
 def merge_duplicate_nodes_evo(graph, threshold=0.7):
     """Semantic merge: representative-only (no transitive chaining) +
     numeric/timestamp protection. Returns (graph, stats)."""
-    stats = {"merged": 0, "protected_numeric": 0, "self_loops_removed": 0}
+    stats = {"merged": 0, "protected_numeric": 0, "protected_pattern": 0,
+             "self_loops_removed": 0}
     if graph.number_of_nodes() < 2:
         return graph, stats
     nodelist = sorted(graph.nodes(), key=lambda n: (-len(str(n)), str(n)))
@@ -384,6 +414,9 @@ def merge_duplicate_nodes_evo(graph, threshold=0.7):
                 continue
             if _non_numeric_tokens(n) == _non_numeric_tokens(str(c["rep"])):
                 stats["protected_numeric"] += 1
+                continue
+            if _slot_pattern_protected(n, str(c["rep"])):
+                stats["protected_pattern"] += 1
                 continue
             if sc > best_score:
                 best_idx, best_score = ci, sc
@@ -570,7 +603,7 @@ def main() -> int:
             print(f"[filter] removed {final_graph.number_of_nodes()-filtered.number_of_nodes()} action node(s)")
         final_graph = filtered
     merge_stats = {"mode": "disabled", "merged": 0, "protected_numeric": 0,
-                   "self_loops_removed": 0}
+                   "protected_pattern": 0, "self_loops_removed": 0}
     if not args.no_merge:
         if args.legacy_merge:
             merged = lang2.merge_duplicate_nodes(final_graph, args.merge_threshold)
@@ -579,13 +612,15 @@ def main() -> int:
                 print(f"[merge] merged {n_alias} near-duplicate variable(s)")
             final_graph = merged
             merge_stats = {"mode": "legacy", "merged": n_alias,
-                           "protected_numeric": 0, "self_loops_removed": 0}
+                           "protected_numeric": 0, "protected_pattern": 0,
+                           "self_loops_removed": 0}
         else:
             merged, merge_stats = merge_duplicate_nodes_evo(final_graph, args.merge_threshold)
             merge_stats["mode"] = "semantic"
             if merge_stats["merged"]:
                 print(f"[merge-evo] merged {merge_stats['merged']} near-duplicate variable(s), "
-                      f"numeric-protected {merge_stats['protected_numeric']} pair(s)")
+                      f"numeric-protected {merge_stats['protected_numeric']} pair(s), "
+                      f"pattern-protected {merge_stats['protected_pattern']} pair(s)")
             final_graph = merged
         loops = cleanup_degenerate_edges(final_graph)
         merge_stats["self_loops_removed"] += loops
