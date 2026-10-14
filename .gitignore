@@ -1,0 +1,16 @@
+﻿__pycache__/
+*.pyc
+*.pyo
+results/
+output/
+output_gen2/
+descriptions/
+_test*/
+test_output/
+data/
+logs/
+*.log
+*.gml
+*.png
+.idea/
+.vscode/
