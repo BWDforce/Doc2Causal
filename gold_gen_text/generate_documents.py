@@ -35,7 +35,7 @@ Usage (first-generation layout, unchanged):
 
 Usage (second-generation corpus):
     python gold_gen_text/generate_documents.py --dag water --n-docs 5 --seed 1 ^
-        --input-parent data\Test-text\input\goldgen_gen2 --subdir "{dag}" ^
+        --input-parent data/Test-text/input/goldgen_gen2 --subdir "{dag}" ^
         --out-dir gold_gen_text\output_gen2 --max-words 400 --context-window 1048576
 """
 from __future__ import annotations
@@ -177,10 +177,17 @@ def parse_args(argv=None):
                    help="Requested model context window (passed to the API as context_window).")
     p.add_argument("--retries", type=int, default=3,
                    help="Retry a failed/empty LLM response this many times.")
+    p.add_argument("--timeout", type=int, default=600,
+                   help="Seconds to wait for an API response before treating it as a "
+                        "retryable timeout error.")
     p.add_argument("--model", default="glm-5.2-fast-preview")
     p.add_argument("--base-url", default="https://llmapi.zihangwu.com.cn:8443/v1")
     p.add_argument("--api-key", default=os.environ.get("GLM_API_KEY"))
     p.add_argument("--fake-per-doc", type=int, default=1)
+    p.add_argument("--bait-mode", default="contradiction", choices=("contradiction", "novel"),
+                   help="contradiction = plant REVERSED-direction claims of true gold edges in a "
+                        "later document (detectable by cross-document conflict arbitration); "
+                        "novel = plant relations between unrelated variables (legacy).")
     p.add_argument("--irrelevant-ratio", type=float, default=0.25)
     p.add_argument("--max-words", type=int, default=400,
                    help="Hard cap on document body length in words (one auto-shorten retry).")
@@ -193,11 +200,12 @@ def parse_args(argv=None):
                    help="Sub-folder name under --input-parent; {dag} and {seed} are substituted.")
     p.add_argument("--alias-dict", action=argparse.BooleanOptionalAction, default=True,
                    help="Build a closed alias vocabulary; documents may only use it (gen2).")
-    p.add_argument("--variant-level", type=int, default=0, choices=(0, 1),
+    p.add_argument("--variant-level", type=int, default=0, choices=(0, 1, 2),
                    help="0 = gen2 closed vocabulary (exact phrases only); "
-                        "1 = gen3 moderate synonymy: base wording from the vocabulary, "
-                        "but light grammatical variants / anaphora allowed and every "
-                        "written surface form must be reported in the aliases output.")
+                        "1 = gen3 moderate synonymy (light grammatical variants/anaphora); "
+                        "2 = gen4 richer synonymy (paraphrase classes, nominal/anaphoric "
+                        "chains, abbreviation-expansion mix). Every written surface form "
+                        "is reported in the aliases output either way.")
     p.add_argument("--dry-run", action="store_true")
     return p.parse_args(argv)
 
@@ -233,12 +241,17 @@ def chat_text(args, messages, temperature=None, log_path=None):
                      "Authorization": f"Bearer {args.api_key}"},
             method="POST")
         try:
-            with urllib.request.urlopen(req, timeout=600) as resp:
+            with urllib.request.urlopen(req, timeout=args.timeout) as resp:
                 raw = resp.read().decode("utf-8", errors="replace")
         except urllib.error.HTTPError as e:
             body = e.read().decode("utf-8", errors="replace")
             log_line(log_path, f"HTTP {e.code}: {body[:2000]}")
             last_err = f"API HTTP {e.code}: {body[:300]!r}"
+            time.sleep(2 * attempt)
+            continue
+        except (TimeoutError, urllib.error.URLError) as e:
+            last_err = f"API timeout/connection error: {type(e).__name__}: {e}"
+            log_line(log_path, f"attempt {attempt} timed out after {args.timeout}s; retrying")
             time.sleep(2 * attempt)
             continue
         log_line(log_path, "response: " + raw[:4000])
@@ -397,6 +410,27 @@ def pick_spurious_pairs(g, gold_edges, doc_vars, n, rng, used_pairs):
     return list(candidates) + list(relaxed[:max(0, n - len(candidates))])
 
 
+def pick_contradiction_bait(gold_edges, doc_index, planted_in_doc, true_doc_of,
+                           used_baits, rng, n):
+    """Pick up to `n` gold edges whose REVERSED direction will be planted as a
+    false claim in THIS document. The true direction must have been stated in an
+    EARLIER document (so on a 2:2 vote tie the earliest-evidence rule keeps the
+    TRUE direction), neither direction may already be asserted in this document,
+    and each gold edge is used for at most one contradiction bait."""
+    cands = []
+    for (u, v) in gold_edges:
+        td = true_doc_of.get((u, v))
+        if td is None or td >= doc_index:
+            continue
+        if (u, v) in planted_in_doc or (v, u) in planted_in_doc:
+            continue
+        if (u, v) in used_baits or (v, u) in used_baits:
+            continue
+        cands.append((u, v, td))
+    rng.shuffle(cands)
+    return cands[:n]
+
+
 def alias_entries_for(varset, alias_dict):
     entries = []
     for v in sorted(varset):
@@ -407,7 +441,7 @@ def alias_entries_for(varset, alias_dict):
 
 def build_doc_prompt(style_key, chains, extra_edges, node_desc, alias_dict,
                      spurious_pairs, irr_ratio, max_words, used_in_doc,
-                     variant_level=0):
+                     variant_level=0, bait_mode="contradiction"):
     style = STYLES[style_key]
     chain_lines = [f"{i+1}. " + " -> ".join(f"{n} ({node_desc.get(n, n)})" for n in path)
                    for i, path in enumerate(chains)]
@@ -432,7 +466,7 @@ def build_doc_prompt(style_key, chains, extra_edges, node_desc, alias_dict,
                 "any other paraphrase, do NOT shorten or extend a listed phrase, and do "
                 "NOT write the raw canonical code anywhere in the document.\n" + vocab_block
             )
-        else:
+        elif variant_level == 1:
             vocab_rule = (
                 "BASE VOCABULARY (very important): the table below gives the base wording "
                 "for each variable. Most mentions should use a listed phrase VERBATIM. "
@@ -445,6 +479,23 @@ def build_doc_prompt(style_key, chains, extra_edges, node_desc, alias_dict,
                 "actually write, add one pair to the aliases array of the JSON output. "
                 "Never write the raw canonical code anywhere in the document.\n" + vocab_block
             )
+        else:
+            vocab_rule = (
+                "BASE VOCABULARY (very important): the table below gives the base wording "
+                "for each variable. RICHER SYNONYMY: do NOT repeat one listed phrase "
+                "verbatim throughout; alternate between (a) the listed phrases, (b) "
+                "word-level synonyms for the descriptive terms only ('noon' <-> 'midday', "
+                "'quarter past noon' <-> '12:15 hours', 'concentration' <-> 'titre' <-> "
+                "'reading'), (c) clause reorderings ('the BOD level recorded at 12:15'), "
+                "and (d) nominal or anaphoric chains ('the former value', 'that earlier "
+                "reading', 'both mid-cycle samples'). Use on average at least two distinct "
+                "surface forms per variable per document. Hard limits: keep the sampling "
+                "time identifiable; never swap the parameter class for a different "
+                "chemical/physical quantity; never weaken or reverse any causal nuance. "
+                "For EVERY distinct surface form you actually write, add one pair to the "
+                "aliases array of the JSON output. Never write the raw canonical code.\n"
+                + vocab_block
+            )
     else:
         vocab_rule = (
             "ANTI LEAKAGE: do NOT use the exact variable names above. Refer to each "
@@ -453,14 +504,22 @@ def build_doc_prompt(style_key, chains, extra_edges, node_desc, alias_dict,
             "used for each canonical variable."
         )
 
-    spurious_lines = [
-        f"{i+1}. {u} ({node_desc.get(u, u)}) --X--> {v} ({node_desc.get(v, v)})"
-        for i, (u, v) in enumerate(spurious_pairs)
-    ] or ["- <none>"]
+    if bait_mode == "contradiction":
+        spurious_lines = [
+            f"{i+1}. ASSERT THE OPPOSITE of the true link below: write in the text "
+            f"that {v} ({node_desc.get(v, v)}) causes {u} ({node_desc.get(u, u)}). "
+            f"(The true direction {u}->{v} is stated in another document.)"
+            for i, (u, v) in enumerate(spurious_pairs)
+        ] or ["- <none>"]
+    else:
+        spurious_lines = [
+            f"{i+1}. {u} ({node_desc.get(u, u)}) --X--> {v} ({node_desc.get(v, v)})"
+            for i, (u, v) in enumerate(spurious_pairs)
+        ] or ["- <none>"]
     spurious_block = ("\n".join(spurious_lines))
 
     alias_schema = (', "aliases": [{"canonical": "A", "surface": "phrase written"}]'
-                     if variant_level == 1 else '')
+                     if variant_level >= 1 else '')
     return f"""You are a technical writer producing ONE document in this style: {style['label']}.
 
 STYLE GUIDANCE:
@@ -577,6 +636,17 @@ def main(argv=None):
         input_dir.mkdir(parents=True, exist_ok=True)
         (meta_out / "prompts").mkdir(parents=True, exist_ok=True)
 
+        true_doc_of = {}
+        for e in g.edges():
+            for did in range(args.n_docs):
+                plist = []
+                for cid in assignments[did]:
+                    plist.extend(chain_utils.chain_edges(chains[cid]))
+                plist.extend([tuple(x) for x in extra_by_doc[did]])
+                if tuple(e) in set(tuple(x) for x in plist):
+                    true_doc_of.setdefault(tuple(e), did)
+                    break
+
         used_spurious = set()
         manifest_docs = []
         for d in range(args.n_docs):
@@ -595,17 +665,29 @@ def main(argv=None):
             for u, v in planted:
                 doc_vars.update([u, v])
             doc_planted = set(tuple(e) for e in planted)
-            spurious_pairs = pick_spurious_pairs(g, gold_edges, doc_vars,
-                                                 args.fake_per_doc, rng, used_spurious)
-            for p in spurious_pairs:
-                used_spurious.add(p)
-            for u, v in spurious_pairs:
-                doc_vars.update([u, v])
+            if args.bait_mode == "contradiction":
+                spurious_edges_meta = pick_contradiction_bait(
+                    gold_edges, d, doc_planted, true_doc_of, used_spurious,
+                    rng, args.fake_per_doc)
+                spurious_pairs = [(u, v) for (u, v, _td) in spurious_edges_meta]
+                for (u, v, _td) in spurious_edges_meta:
+                    used_spurious.add((u, v))
+                for u, v in spurious_pairs:
+                    doc_vars.update([u, v])
+            else:
+                spurious_edges_meta = []
+                spurious_pairs = pick_spurious_pairs(g, gold_edges, doc_vars,
+                                                     args.fake_per_doc, rng, used_spurious)
+                for pp in spurious_pairs:
+                    used_spurious.add(pp)
+                for u, v in spurious_pairs:
+                    doc_vars.update([u, v])
 
             prompt = build_doc_prompt(style_key, doc_paths, doc_extra, node_desc,
                                       alias_dict, spurious_pairs, args.irrelevant_ratio,
                                       args.max_words, doc_vars,
-                                      variant_level=args.variant_level)
+                                      variant_level=args.variant_level,
+                                      bait_mode=args.bait_mode)
             (meta_out / "prompts" / f"doc_{d+1:02d}_{style_key}.txt").write_text(
                 prompt, encoding="utf-8")
 
@@ -648,7 +730,7 @@ def main(argv=None):
                 ensure_ascii=False, indent=2), encoding="utf-8")
 
             alias_entries = alias_entries_for(doc_vars, alias_dict)
-            if args.variant_level == 1:
+            if args.variant_level >= 1:
                 seen_surfaces = {(a["canonical"], a["surface"]) for a in alias_entries}
                 for a in llm.get("aliases", []) or []:
                     if isinstance(a, dict) and a.get("canonical") in doc_vars and a.get("surface"):
@@ -656,12 +738,18 @@ def main(argv=None):
                         if key not in seen_surfaces:
                             alias_entries.append({"canonical": a["canonical"], "surface": a["surface"]})
                             seen_surfaces.add(key)
+            contra_meta = [{"gold_ref": [u, v],
+                             "wrong_direction": [v, u],
+                             "true_doc": td}
+                            for (u, v, td) in spurious_edges_meta]
             manifest_docs.append({
                 "file": doc_path.name, "style": style_key,
                 "assigned_chain_ids": [cid for cid, _ in doc_chains],
                 "extra_edges": [list(e) for e in doc_extra],
                 "planted_edges": planted,
-                "spurious_edges": [list(e) for e in spurious_pairs],
+                "spurious_edges": [] if args.bait_mode == "contradiction"
+                                  else [list(e) for e in spurious_pairs],
+                "contradiction_bait_edges": contra_meta,
                 "aliases": alias_entries,
                 "words": count_words(llm.get("body", "")),
                 "title": llm["title"],
@@ -676,8 +764,11 @@ def main(argv=None):
             "context_window": args.context_window,
             "max_words": args.max_words,
             "variant_level": args.variant_level,
-            "spurious_policy": ("deterministic; excludes reverse gold edges and path-related pairs; "
-                                "no wrong-direction bait"),
+            "spurious_policy": ("contradiction bait: reversed-direction claims of true gold edges, "
+                                "planted in a later document so cross-document conflict arbitration "
+                                "can resolve them (majority vote, earliest tie-break)") if args.bait_mode == "contradiction"
+                                else ("novel bait: deterministic; excludes reverse gold edges and "
+                                      "path-related pairs; no wrong-direction bait"),
             "theme": {"id": dag_name, "label": theme["label"],
                       "extract_theme": theme["extract_theme"]},
             "gold_nodes": gold["nodes"], "gold_edges": gold["edges"],
