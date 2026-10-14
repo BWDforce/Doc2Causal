@@ -189,8 +189,9 @@ def parse_args(argv=None):
                         "later document (detectable by cross-document conflict arbitration); "
                         "novel = plant relations between unrelated variables (legacy).")
     p.add_argument("--irrelevant-ratio", type=float, default=0.25)
-    p.add_argument("--max-words", type=int, default=400,
-                   help="Hard cap on document body length in words (one auto-shorten retry).")
+    p.add_argument("--max-words", type=int, default=0,
+                   help="Target document body length in words (0 = no word limit; "
+                        "above max_words+100 one auto-shorten retry is triggered).")
     p.add_argument("--cross-doc-ratio", type=float, default=0.2)
     p.add_argument("--out-dir", type=Path, default=OUT_DIR,
                    help="Metadata root (manifest/prompts/theme/logs) per corpus.")
@@ -518,6 +519,14 @@ def build_doc_prompt(style_key, chains, extra_edges, node_desc, alias_dict,
         ] or ["- <none>"]
     spurious_block = ("\n".join(spurious_lines))
 
+    if max_words > 0:
+        length_rule = (f"about {max_words} WORDS -- keep the body between "
+                       f"{max_words-100} and {max_words+100} words. "
+                       f"Focused section, not an exhaustive manual. Be brief in reasoning.")
+    else:
+        length_rule = ("NO WORD LIMIT. Write a complete, coherent document that "
+                       "naturally covers every chain plus the false claims, "
+                       "without padding.")
     alias_schema = (', "aliases": [{"canonical": "A", "surface": "phrase written"}]'
                      if variant_level >= 1 else '')
     return f"""You are a technical writer producing ONE document in this style: {style['label']}.
@@ -551,8 +560,7 @@ RULES (very important):
 3. REALISM / NOISE: (a) include about {irr_pct}% non-causal background sentences
    (context, measurements, procedures) that carry NO causal claim; (b) plant the
    false statements above in a natural, unmarked way.
-4. LENGTH (target): about {max_words} WORDS -- keep the body between {max_words-100} and {max_words+100} words.
-   Focused section, not an exhaustive manual. Be brief in reasoning.
+4. LENGTH: {length_rule}.
 5. Output ONLY a JSON object (no prose around it) with this exact schema:
 {{"title": "string", "body": "full document text"{alias_schema}}}
 """
@@ -703,7 +711,7 @@ def main(argv=None):
                 raw = chat_text(args, [{"role": "user", "content": prompt}], log_path=log_path)
                 llm = extract_json(raw, log_path=log_path)
                 body = llm.get("body", "")
-                if count_words(body) > _hi:
+                if args.max_words > 0 and count_words(body) > _hi:
                     shorten_tries = 1
                     log_line(log_path, f"[doc {d+1}] {count_words(body)} words > {_hi}; "
                                        f"one auto-shorten pass")
@@ -721,10 +729,11 @@ def main(argv=None):
                         llm = llm2
                     else:
                         log_line(log_path, f"[doc {d+1}] shorten pass not better; keeping first draft")
-                log_line(log_path, f"[doc {d+1}] parsed OK title={llm.get('title', '')[:80]!r} "
-                                   f"words={count_words(llm.get('body', ''))} "
-                                   f"(target {_lo}-{_hi}) shorten_tries={shorten_tries}")
-                time.sleep(0.5)
+            _target = f"target {_lo}-{_hi}" if args.max_words > 0 else "no-limit"
+            log_line(log_path, f"[doc {d+1}] parsed OK title={llm.get('title', '')[:80]!r} "
+                               f"words={count_words(llm.get('body', ''))} "
+                               f"({_target}) shorten_tries={shorten_tries}")
+            time.sleep(0.5)
 
             doc_path = input_dir / f"{d+1:02d}_{style_key}.json"
             doc_path.write_text(json.dumps(
@@ -764,7 +773,7 @@ def main(argv=None):
             "generator_version": "gen2",
             "alias_mode": alias_mode if not args.dry_run else "dry-run",
             "context_window": args.context_window,
-            "max_words": args.max_words,
+            "max_words": None if args.max_words <= 0 else args.max_words,
             "variant_level": args.variant_level,
             "spurious_policy": ("contradiction bait: reversed-direction claims of true gold edges, "
                                 "planted in a later document so cross-document conflict arbitration "
