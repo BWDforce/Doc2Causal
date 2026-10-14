@@ -173,16 +173,16 @@ def parse_args(argv=None):
     p.add_argument("--max-tokens", type=int, default=100000,
                    help="Max completion tokens per attempt (auto-doubles on length-truncation up to "
                         "the context window).")
-    p.add_argument("--context-window", type=int, default=1048576,
+    p.add_argument("--context-window", type=int, default=131072,
                    help="Requested model context window (passed to the API as context_window).")
     p.add_argument("--retries", type=int, default=3,
                    help="Retry a failed/empty LLM response this many times.")
     p.add_argument("--timeout", type=int, default=600,
                    help="Seconds to wait for an API response before treating it as a "
                         "retryable timeout error.")
-    p.add_argument("--model", default="glm-5.2-fast-preview")
-    p.add_argument("--base-url", default="https://llmapi.zihangwu.com.cn:8443/v1")
-    p.add_argument("--api-key", default=os.environ.get("GLM_API_KEY"))
+    p.add_argument("--model", default="deepseek-v4-pro")
+    p.add_argument("--base-url", default="https://api.deepseek.com")
+    p.add_argument("--api-key", default=os.environ.get("DEEPSEEK_API_KEY"))
     p.add_argument("--fake-per-doc", type=int, default=1)
     p.add_argument("--bait-mode", default="contradiction", choices=("contradiction", "novel"),
                    help="contradiction = plant REVERSED-direction claims of true gold edges in a "
@@ -568,7 +568,7 @@ def count_words(text):
 def main(argv=None):
     args = parse_args(argv)
     if not args.dry_run and not args.api_key:
-        raise SystemExit("Set GLM_API_KEY or pass --api-key (or use --dry-run).")
+        raise SystemExit("Set DEEPSEEK_API_KEY or pass --api-key (or use --dry-run).")
 
     if args.dag == "all":
         dag_names = sorted(p.stem for p in GOLD_DAG_DIR.glob("*.json"))
