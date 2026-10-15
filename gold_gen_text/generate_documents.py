@@ -154,6 +154,11 @@ THEMES = {
         "extract_theme": "ventilator machine and patient monitoring alarm system",
         "styles": ["manual", "test_report", "fault_report", "maintenance_log"],
     },
+    "chiller": {
+        "label": "industrial water-cooled screw chiller unit",
+        "extract_theme": "water-cooled screw chiller system operation and failure",
+        "styles": ["manual", "test_report", "fault_report", "maintenance_log"],
+    },
 }
 
 DEFAULT_THEME = {
@@ -209,6 +214,20 @@ def parse_args(argv=None):
                         "is reported in the aliases output either way.")
     p.add_argument("--dry-run", action="store_true")
     return p.parse_args(argv)
+
+
+CHILLER_GOLD_PATH = PROJECT_ROOT / "data" / "Test-text" / "gold" / "chiller_gold.json"
+
+
+def load_gold(dag_name):
+    """Return a standard-format gold dict {'nodes': [...], 'edges': [...], ...}.
+    chiller comes from its own进展情况 artifact (variables with aliases)."""
+    if dag_name == "chiller":
+        raw = json.loads(CHILLER_GOLD_PATH.read_text(encoding="utf-8"))
+        nodes = [v["name"] for v in raw["variables"]]
+        edges = [[e["cause"], e["effect"]] for e in raw["edges"]]
+        return {"nodes": nodes, "edges": edges, "_raw": raw}
+    return json.loads((PROJECT_ROOT / "gold_DAG" / f"{dag_name}.json").read_text(encoding="utf-8"))
 
 
 def log_line(log_path, text):
@@ -586,11 +605,13 @@ def main(argv=None):
         dag_names = [args.dag]
 
     for dag_name in dag_names:
-        gold_file = GOLD_DAG_DIR / f"{dag_name}.json"
-        if not gold_file.exists():
+        if dag_name == "chiller" and not CHILLER_GOLD_PATH.exists():
+            print(f"[skip] {dag_name}: {CHILLER_GOLD_PATH} not found")
+            continue
+        if dag_name != "chiller" and not (GOLD_DAG_DIR / f"{dag_name}.json").exists():
             print(f"[skip] {dag_name}: gold_DAG/{dag_name}.json not found")
             continue
-        gold = json.loads(gold_file.read_text(encoding="utf-8"))
+        gold = load_gold(dag_name)
         g = nx.DiGraph()
         g.add_nodes_from(gold["nodes"])
         g.add_edges_from(tuple(e) for e in gold["edges"])
@@ -609,8 +630,12 @@ def main(argv=None):
         log_line(log_path, f"[chains] {len(chains)} chains covering {len(gold['edges'])} gold edges")
 
         node_desc = load_descriptions(args, dag_name, gold["nodes"], log_path)
-        if args.dry_run:
-            # deterministic preview so prompts still show the closed-vocabulary block
+        if dag_name == "chiller" and gold.get("_raw"):
+            src_aliases = {v["name"]: (v.get("aliases") or [])[:4]
+                           for v in gold["_raw"]["variables"]}
+            alias_dict = src_aliases
+            alias_mode = "dict(src aliases from chiller gold)"
+        elif args.dry_run:
             alias_dict = {n: [node_desc.get(n, n), f"{node_desc.get(n, n)} value"] for n in gold["nodes"]}
             alias_mode = "dict(dry-run preview)"
         else:

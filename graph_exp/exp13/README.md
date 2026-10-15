@@ -22,7 +22,7 @@ gold_gen_text/output_gen5/<dag>/seed1/{manifest.json, extract_theme.txt, alias_d
    - **断点续跑**：已有结果的 run 目录（存在 GML）自动跳过，中途崩溃重跑同一命令即可接续，不重复烧钱；需要全量重算时加 `--force`；
    - 单 phase 超时（`--timeout`，默认 3600 秒）不中断整批；
 3. **矛盾型诱饵评测**：新增 `contra` 三指标——每条方向矛盾诱饵的**仲裁解决数 / 残留数 / 保留真方向数**（summary 中 `contra r/s` 列展示 resolved/survived 均值）；
-4. 模型默认走 **DeepSeek 官方 API**（`deepseek-v4-flash`，可 `--model deepseek-v4-pro` 覆盖）。
+4. LLM 与 URL 与 exp12 一致：`deepseek-v4.1-flash` + `https://llmapi.zihangwu.com.cn:8443/v1`（可 `--model` 覆盖）。
 
 ## 运行（三个主题三条指令，依次执行即可）
 
