@@ -1,0 +1,39 @@
+PREFIX acc: <https://w3id.org/d2c/acc#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT
+  ?edge ?kind ?verification_status ?semantic_support ?verifier_support
+  ?evidence_grade ?promotion_status ?evidence_completeness ?support_scope
+  ?verifier_support_scope ?evidence_contract_complete ?evidence_contract_json
+  ?best_window_kind ?condition_grounding ?temporal_consistency ?fraction_consistency
+  ?claim_scope ?provenance ?direct_support ?path_support ?verifier_direction
+  ?verifier_recommended_kind ?edge_source ?edge_target ?edge_source_label ?edge_target_label
+WHERE {
+  ?edge a acc:RetainedEdge .
+  OPTIONAL { ?edge acc:edgeKind ?kind . }
+  OPTIONAL { ?edge acc:verificationState ?verification_status . }
+  OPTIONAL { ?edge acc:verificationStatus ?semantic_support . }
+  OPTIONAL { ?edge acc:verifierSupport ?verifier_support . }
+  OPTIONAL { ?edge acc:evidenceGrade ?evidence_grade . }
+  OPTIONAL { ?edge acc:promotionStatus ?promotion_status . }
+  OPTIONAL { ?edge acc:evidenceCompleteness ?evidence_completeness . }
+  OPTIONAL { ?edge acc:supportScope ?support_scope . }
+  OPTIONAL { ?edge acc:verifierSupportScope ?verifier_support_scope . }
+  OPTIONAL { ?edge acc:evidenceContractComplete ?evidence_contract_complete . }
+  OPTIONAL { ?edge acc:evidenceContractJson ?evidence_contract_json . }
+  OPTIONAL { ?edge acc:bestWindowKind ?best_window_kind . }
+  OPTIONAL { ?edge acc:conditionGrounding ?condition_grounding . }
+  OPTIONAL { ?edge acc:temporalConsistency ?temporal_consistency . }
+  OPTIONAL { ?edge acc:fractionConsistency ?fraction_consistency . }
+  OPTIONAL { ?edge acc:claimScope ?claim_scope . }
+  OPTIONAL { ?edge acc:provenance ?provenance . }
+  OPTIONAL { ?edge acc:directSupport ?direct_support . }
+  OPTIONAL { ?edge acc:pathSupport ?path_support . }
+  OPTIONAL { ?edge acc:verifierDirection ?verifier_direction . }
+  OPTIONAL { ?edge acc:verifierRecommendedKind ?verifier_recommended_kind . }
+  OPTIONAL { ?edge acc:source ?edge_source . }
+  OPTIONAL { ?edge acc:target ?edge_target . }
+  OPTIONAL { ?edge_source acc:label ?edge_source_label . }
+  OPTIONAL { ?edge_target acc:label ?edge_target_label . }
+}
+ORDER BY ?edge

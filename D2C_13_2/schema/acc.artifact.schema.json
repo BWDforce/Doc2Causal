@@ -1,0 +1,605 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/d2c/acc/artifact.schema.json",
+  "title": "D2C_13_2 ACC Artifact",
+  "type": "object",
+  "required": [
+    "artifact_id",
+    "version",
+    "entities",
+    "spans",
+    "assertions",
+    "edges",
+    "views"
+  ],
+  "properties": {
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^urn:d2c:artifact:"
+    },
+    "version": {
+      "const": "D2C_13_2"
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entity"
+      }
+    },
+    "spans": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/span"
+      }
+    },
+    "assertions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/assertion"
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/edge"
+      }
+    },
+    "conditions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/condition"
+      }
+    },
+    "views": {
+      "type": "object"
+    },
+    "diagnostics": {
+      "type": "object"
+    }
+  },
+  "$defs": {
+    "entity": {
+      "type": "object",
+      "required": [
+        "id",
+        "label"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "time_indices": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "state_signature": {
+          "type": "object",
+          "properties": {
+            "negation": {
+              "type": "boolean"
+            },
+            "state_terms": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "identity_key": {
+          "type": "string"
+        }
+      }
+    },
+    "span": {
+      "type": "object",
+      "required": [
+        "id",
+        "doc_id",
+        "start",
+        "end"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "doc_id": {
+          "type": "string"
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "context": {
+          "type": "string"
+        }
+      }
+    },
+    "assertion": {
+      "type": "object",
+      "required": [
+        "id",
+        "source",
+        "target",
+        "doc_id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "doc_id": {
+          "type": "string"
+        }
+      }
+    },
+    "condition": {
+      "type": "object",
+      "required": [
+        "id",
+        "equivalence_key"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "equivalence_key": {
+          "type": "string"
+        },
+        "condition_kind": {
+          "type": "string"
+        }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "required": [
+        "id",
+        "source",
+        "target",
+        "kind",
+        "support_assertion_ids",
+        "span_ids",
+        "semantic_support"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "direct_core",
+            "conditional",
+            "regime",
+            "transitive_derived",
+            "candidate",
+            "unsupported_hypothesis",
+            "hypothesis",
+            "rejected"
+          ]
+        },
+        "support_assertion_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "span_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "candidate_assertion_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "candidate_span_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "candidate_doc_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "candidate_derivation_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "support_mode": {
+          "type": "string"
+        },
+        "support_strength": {
+          "type": "string"
+        },
+        "verifier_support": {
+          "type": "string"
+        },
+        "verifier_direction": {
+          "type": "string"
+        },
+        "verifier_recommended_kind": {
+          "type": "string"
+        },
+        "verification_status": {
+          "type": "string"
+        },
+        "semantic_support": {
+          "type": "string"
+        },
+        "condition_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "support_doc_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "claim_scope": {
+          "enum": [
+            "direct",
+            "composed",
+            "conditional",
+            "regime",
+            "hypothesis",
+            "unknown"
+          ]
+        },
+        "evidence_grade": {
+          "enum": [
+            "span_grounded",
+            "assertion_grounded",
+            "span_only",
+            "derived_path",
+            "context_only",
+            "none"
+          ]
+        },
+        "candidate_support_mode": {
+          "type": "string"
+        },
+        "candidate_support_strength": {
+          "type": "string"
+        },
+        "candidate_origin": {
+          "type": "string"
+        },
+        "candidate_tier": {
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "none"
+          ]
+        },
+        "candidate_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidence_union_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "direct_support": {
+          "type": "string"
+        },
+        "path_support": {
+          "type": "string"
+        },
+        "condition_support": {
+          "type": "string"
+        },
+        "verification_coverage": {
+          "type": "string"
+        },
+        "view_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "assertion_support": {
+          "type": "string"
+        },
+        "promotion_status": {
+          "enum": [
+            "core",
+            "soft_core",
+            "partial_forward_core",
+            "needs_review",
+            "excluded",
+            "none"
+          ]
+        },
+        "soft_core_eligible": {
+          "type": "boolean"
+        },
+        "partial_forward_promotion": {
+          "type": "boolean"
+        },
+        "direction_audit": {
+          "type": "string"
+        },
+        "path_summary": {
+          "type": "boolean"
+        },
+        "path_summary_explicit_direct": {
+          "type": "boolean"
+        },
+        "identity_key": {
+          "type": "string"
+        },
+        "polarity_status": {
+          "type": "string"
+        },
+        "identity_status": {
+          "type": "string"
+        },
+        "condition_status": {
+          "type": "string"
+        },
+        "provisional_recovery": {
+          "type": "boolean"
+        },
+        "assertion_recovery": {
+          "type": "boolean"
+        },
+        "support_aware_eligible": {
+          "type": "boolean"
+        },
+        "support_aware_status": {
+          "type": "string"
+        },
+        "support_aware_reason": {
+          "type": "string"
+        },
+        "promotion_gate": {
+          "type": "object"
+        },
+        "direction_support_forward": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "direction_support_reverse": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "relation_role_source": {
+          "type": "string"
+        },
+        "relation_role_target": {
+          "type": "string"
+        },
+        "role_direction": {
+          "type": "string"
+        },
+        "role_conflict": {
+          "type": "boolean"
+        },
+        "role_override": {
+          "type": "boolean"
+        },
+        "textual_vote_source": {
+          "type": "string"
+        },
+        "textual_span_forward_votes": {
+          "type": "integer"
+        },
+        "textual_span_reverse_votes": {
+          "type": "integer"
+        },
+        "textual_attribute_forward_votes": {
+          "type": "integer"
+        },
+        "textual_attribute_reverse_votes": {
+          "type": "integer"
+        },
+        "temporal_mode": {
+          "type": "string"
+        },
+        "temporal_abstained": {
+          "type": "boolean"
+        },
+        "directness_class": {
+          "type": "string"
+        },
+        "directness_reason": {
+          "type": "string"
+        },
+        "shortcut_risk": {
+          "type": "string"
+        },
+        "shortcut_path_edge_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidence_completeness": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "context_assisted",
+            "partial",
+            "assertion_only",
+            "candidate_only",
+            "path_only",
+            "absent"
+          ]
+        },
+        "support_scope": {
+          "type": "string",
+          "enum": [
+            "exact_span",
+            "exact_sentence_window",
+            "context_assisted",
+            "context_window",
+            "partial_window",
+            "assertion_only",
+            "candidate",
+            "path_derived",
+            "none"
+          ]
+        },
+        "condition_grounding": {
+          "type": "string",
+          "enum": [
+            "grounded",
+            "context_grounded",
+            "ungrounded",
+            "not_applicable"
+          ]
+        },
+        "temporal_consistency": {
+          "type": "string",
+          "enum": [
+            "consistent",
+            "partial",
+            "inconsistent",
+            "not_applicable"
+          ]
+        },
+        "fraction_consistency": {
+          "type": "string",
+          "enum": [
+            "consistent",
+            "partial",
+            "inconsistent",
+            "not_applicable"
+          ]
+        },
+        "evidence_coverage": {
+          "type": "object",
+          "properties": {
+            "source": {
+              "type": "boolean"
+            },
+            "target": {
+              "type": "boolean"
+            },
+            "predicate": {
+              "type": "boolean"
+            },
+            "condition": {
+              "type": "boolean"
+            },
+            "score": {
+              "type": "number"
+            }
+          }
+        },
+        "missing_evidence_components": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidence_windows": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "evidence_window_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "best_evidence_window_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "best_window_kind": {
+          "type": "string",
+          "enum": ["exact_span", "exact_window", "context", "context_partial", "partial", "assertion_only", "original", "absent", "none"]
+        },
+        "best_window_source": {
+          "type": "string"
+        },
+        "best_window_width": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evidence_exact_match": {
+          "type": "boolean"
+        },
+        "context_window_complete": {
+          "type": "boolean"
+        },
+        "evidence_packaging_stage": {
+          "type": "string"
+        },
+        "verifier_support_scope": {
+          "type": "string",
+          "enum": ["exact_span", "exact_sentence_window", "context_assisted", "context_window", "partial_window", "assertion_only", "candidate", "path_derived", "none"]
+        },
+        "verifier_window_kind": {
+          "type": "string"
+        },
+        "pre_verification_evidence_completeness": {
+          "type": "string"
+        },
+        "pre_verification_support_scope": {
+          "type": "string",
+          "enum": ["exact_span", "exact_sentence_window", "context_assisted", "context_window", "partial_window", "assertion_only", "candidate", "path_derived", "none"]
+        },
+        "pre_verification_evidence_windows": {
+          "type": "array",
+          "items": {"type": "object"}
+        },
+        "pre_verification_evidence_packaging_version": {
+          "type": "string"
+        },        "evidence_packaging_version": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

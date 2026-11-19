@@ -1,0 +1,25 @@
+PREFIX acc: <https://w3id.org/d2c/acc#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?edge
+  (COUNT(DISTINCT ?assertion) AS ?assertionCount)
+  (COUNT(DISTINCT ?derivedAssertion) AS ?derivedAssertionCount)
+WHERE {
+  ?edge a acc:RetainedEdge .
+  OPTIONAL {
+    {
+      ?edge acc:hasAssertion ?assertion .
+    }
+    UNION
+    {
+      ?edge acc:candidateAssertion ?assertion .
+    }
+  }
+  OPTIONAL {
+    ?edge prov:wasDerivedFrom ?derivedAssertion .
+    ?derivedAssertion a acc:Assertion .
+  }
+}
+GROUP BY ?edge
+ORDER BY ?edge

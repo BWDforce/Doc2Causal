@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the associated Doc2Causal paper."
+title: "Doc2Causal"
+version: "0.13.2"
+type: software
+repository-code: "https://github.com/BWDforce/Doc2Causal"
+license: MIT
+abstract: >-
+  An evidence-packaged causal artifact pipeline with JSON-LD/Turtle export,
+  SHACL validation, independent SPARQL access to Q1-Q7, and reproducible
+  canonical arbitration views.
+keywords:
+  - causal knowledge graph
+  - document analysis
+  - provenance
+  - SHACL
+  - SPARQL
+authors:
+  - family-names: "Xu"
+    given-names: "Bowen"
+  - family-names: "Hao"
+    given-names: "Peilin"
+  - family-names: "Jiang"
+    given-names: "Mingjun"
+  - family-names: "Zhang"
+    given-names: "Hao"

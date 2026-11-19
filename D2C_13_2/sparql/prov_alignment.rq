@@ -1,0 +1,28 @@
+PREFIX acc: <https://w3id.org/d2c/acc#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?recordType
+  (COUNT(DISTINCT ?record) AS ?records)
+  (COUNT(DISTINCT ?generatedRecord) AS ?generatedRecords)
+WHERE {
+  VALUES ?recordType {
+    acc:Document
+    acc:Span
+    acc:Entity
+    acc:Assertion
+    acc:Condition
+    acc:RetainedEdge
+    acc:Vote
+    acc:ConflictDecision
+    acc:CycleDecision
+  }
+  ?record a ?recordType ;
+          a prov:Entity .
+  OPTIONAL {
+    ?record prov:wasGeneratedBy ?generated .
+    BIND(?record AS ?generatedRecord)
+  }
+}
+GROUP BY ?recordType
+ORDER BY ?recordType

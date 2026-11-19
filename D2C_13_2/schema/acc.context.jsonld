@@ -1,0 +1,651 @@
+{
+  "@context": {
+    "acc": "https://w3id.org/d2c/acc#",
+    "prov": "http://www.w3.org/ns/prov#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "id": "@id",
+    "type": "@type",
+    "Artifact": "acc:Artifact",
+    "ArtifactCompilationActivity": "acc:ArtifactCompilationActivity",
+    "Document": "acc:Document",
+    "Span": "acc:Span",
+    "Entity": "acc:Entity",
+    "Assertion": "acc:Assertion",
+    "Condition": "acc:Condition",
+    "RetainedEdge": "acc:RetainedEdge",
+    "DirectCoreEdge": "acc:DirectCoreEdge",
+    "ConditionalEdge": "acc:ConditionalEdge",
+    "RegimeEdge": "acc:RegimeEdge",
+    "TransitiveDerivedEdge": "acc:TransitiveDerivedEdge",
+    "CandidateEdge": "acc:CandidateEdge",
+    "UnsupportedHypothesisEdge": "acc:UnsupportedHypothesisEdge",
+    "HypothesisEdge": "acc:HypothesisEdge",
+    "RejectedEdge": "acc:RejectedEdge",
+    "ConflictDecision": "acc:ConflictDecision",
+    "CycleDecision": "acc:CycleDecision",
+    "Vote": "acc:Vote",
+    "version": {
+      "@id": "acc:version",
+      "@type": "xsd:string"
+    },
+    "createdAt": {
+      "@id": "acc:createdAt",
+      "@type": "xsd:string"
+    },
+    "sourceRun": {
+      "@id": "acc:sourceRun",
+      "@type": "xsd:string"
+    },
+    "docId": {
+      "@id": "acc:docId",
+      "@type": "xsd:string"
+    },
+    "title": {
+      "@id": "acc:title",
+      "@type": "xsd:string"
+    },
+    "sourceFile": {
+      "@id": "acc:sourceFile",
+      "@type": "xsd:string"
+    },
+    "start": {
+      "@id": "acc:start",
+      "@type": "xsd:integer"
+    },
+    "end": {
+      "@id": "acc:end",
+      "@type": "xsd:integer"
+    },
+    "textHash": {
+      "@id": "acc:textHash",
+      "@type": "xsd:string"
+    },
+    "text": {
+      "@id": "acc:text",
+      "@type": "xsd:string"
+    },
+    "contextText": {
+      "@id": "acc:contextText",
+      "@type": "xsd:string"
+    },
+    "ofDocument": {
+      "@id": "acc:ofDocument",
+      "@type": "@id"
+    },
+    "label": {
+      "@id": "acc:label",
+      "@type": "xsd:string"
+    },
+    "description": {
+      "@id": "acc:description",
+      "@type": "xsd:string"
+    },
+    "entityType": {
+      "@id": "acc:entityType",
+      "@type": "xsd:string"
+    },
+    "alias": {
+      "@id": "acc:alias",
+      "@container": "@set"
+    },
+    "contextSignature": {
+      "@id": "acc:contextSignature",
+      "@type": "xsd:string"
+    },
+    "raw": {
+      "@id": "acc:raw",
+      "@type": "xsd:string"
+    },
+    "normalized": {
+      "@id": "acc:normalized",
+      "@type": "xsd:string"
+    },
+    "equivalenceKey": {
+      "@id": "acc:equivalenceKey",
+      "@type": "xsd:string"
+    },
+    "channel": {
+      "@id": "acc:channel",
+      "@type": "xsd:string"
+    },
+    "order": {
+      "@id": "acc:order",
+      "@type": "xsd:integer"
+    },
+    "ofSpan": {
+      "@id": "acc:ofSpan",
+      "@type": "@id"
+    },
+    "sign": {
+      "@id": "acc:sign",
+      "@type": "xsd:string"
+    },
+    "rung": {
+      "@id": "acc:rung",
+      "@type": "xsd:string"
+    },
+    "mechanism": {
+      "@id": "acc:mechanism",
+      "@type": "xsd:string"
+    },
+    "edgeKind": {
+      "@id": "acc:edgeKind",
+      "@type": "xsd:string"
+    },
+    "source": {
+      "@id": "acc:source",
+      "@type": "@id"
+    },
+    "target": {
+      "@id": "acc:target",
+      "@type": "@id"
+    },
+    "hasEntity": {
+      "@id": "acc:hasEntity",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "hasEdge": {
+      "@id": "acc:hasEdge",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "hasAssertion": {
+      "@id": "acc:hasAssertion",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "hasSpan": {
+      "@id": "acc:hasSpan",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "hasDocumentSupport": {
+      "@id": "acc:hasDocumentSupport",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "candidateAssertion": {
+      "@id": "acc:candidateAssertion",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "candidateSpan": {
+      "@id": "acc:candidateSpan",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "candidateDocument": {
+      "@id": "acc:candidateDocument",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "candidateDerivation": {
+      "@id": "acc:candidateDerivation",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "condition": {
+      "@id": "acc:condition",
+      "@type": "@id"
+    },
+    "conditionKind": {
+      "@id": "acc:conditionKind",
+      "@type": "xsd:string"
+    },
+    "derivedFrom": {
+      "@id": "acc:derivedFrom",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "verificationStatus": {
+      "@id": "acc:verificationStatus",
+      "@type": "xsd:string"
+    },
+    "directionStatus": {
+      "@id": "acc:directionStatus",
+      "@type": "xsd:string"
+    },
+    "directionAudit": {
+      "@id": "acc:directionAudit",
+      "@type": "xsd:string"
+    },
+    "pathSummary": {
+      "@id": "acc:pathSummary",
+      "@type": "xsd:boolean"
+    },
+    "pathSummaryExplicitDirect": {
+      "@id": "acc:pathSummaryExplicitDirect",
+      "@type": "xsd:boolean"
+    },
+    "supportMode": {
+      "@id": "acc:supportMode",
+      "@type": "xsd:string"
+    },
+    "supportStrength": {
+      "@id": "acc:supportStrength",
+      "@type": "xsd:string"
+    },
+    "claimScope": {
+      "@id": "acc:claimScope",
+      "@type": "xsd:string"
+    },
+    "evidenceGrade": {
+      "@id": "acc:evidenceGrade",
+      "@type": "xsd:string"
+    },
+    "candidateSupportMode": {
+      "@id": "acc:candidateSupportMode",
+      "@type": "xsd:string"
+    },
+    "candidateSupportStrength": {
+      "@id": "acc:candidateSupportStrength",
+      "@type": "xsd:string"
+    },
+    "candidateOrigin": {
+      "@id": "acc:candidateOrigin",
+      "@type": "xsd:string"
+    },
+    "candidateTier": {
+      "@id": "acc:candidateTier",
+      "@type": "xsd:string"
+    },
+    "candidateEvidence": {
+      "@id": "acc:candidateEvidence",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "evidenceUnion": {
+      "@id": "acc:evidenceUnion",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "directSupport": {
+      "@id": "acc:directSupport",
+      "@type": "xsd:string"
+    },
+    "assertionSupport": {
+      "@id": "acc:assertionSupport",
+      "@type": "xsd:string"
+    },
+    "promotionStatus": {
+      "@id": "acc:promotionStatus",
+      "@type": "xsd:string"
+    },
+    "softCoreEligible": {
+      "@id": "acc:softCoreEligible",
+      "@type": "xsd:boolean"
+    },
+    "partialForwardPromotion": {
+      "@id": "acc:partialForwardPromotion",
+      "@type": "xsd:boolean"
+    },
+    "pathSupport": {
+      "@id": "acc:pathSupport",
+      "@type": "xsd:string"
+    },
+    "conditionSupport": {
+      "@id": "acc:conditionSupport",
+      "@type": "xsd:string"
+    },
+    "verificationCoverage": {
+      "@id": "acc:verificationCoverage",
+      "@type": "xsd:string"
+    },
+    "verifierSupport": {
+      "@id": "acc:verifierSupport",
+      "@type": "xsd:string"
+    },
+    "verifierDirection": {
+      "@id": "acc:verifierDirection",
+      "@type": "xsd:string"
+    },
+    "verifierRecommendedKind": {
+      "@id": "acc:verifierRecommendedKind",
+      "@type": "xsd:string"
+    },
+    "verificationState": {
+      "@id": "acc:verificationState",
+      "@type": "xsd:string"
+    },
+    "confidence": {
+      "@id": "acc:confidence",
+      "@type": "xsd:string"
+    },
+    "provenance": {
+      "@id": "acc:provenance",
+      "@type": "xsd:string"
+    },
+    "assertions": {
+      "@id": "acc:assertions",
+      "@type": "xsd:integer"
+    },
+    "documents": {
+      "@id": "acc:documents",
+      "@type": "xsd:integer"
+    },
+    "rule": {
+      "@id": "acc:rule",
+      "@type": "xsd:string"
+    },
+    "pair": {
+      "@id": "acc:pair",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "removedEdge": {
+      "@id": "acc:removedEdge",
+      "@type": "xsd:string"
+    },
+    "direction": {
+      "@id": "acc:direction",
+      "@type": "xsd:string"
+    },
+    "supportDocument": {
+      "@id": "acc:supportDocument",
+      "@type": "xsd:string",
+      "@container": "@set"
+    },
+    "oppositionDocument": {
+      "@id": "acc:oppositionDocument",
+      "@type": "xsd:string",
+      "@container": "@set"
+    },
+    "uncertainDocument": {
+      "@id": "acc:uncertainDocument",
+      "@type": "xsd:string",
+      "@container": "@set"
+    },
+    "forwardDocument": {
+      "@id": "acc:forwardDocument",
+      "@type": "xsd:string",
+      "@container": "@set"
+    },
+    "reverseDocument": {
+      "@id": "acc:reverseDocument",
+      "@type": "xsd:string",
+      "@container": "@set"
+    },
+    "supportVoteCount": {
+      "@id": "acc:supportVoteCount",
+      "@type": "xsd:integer"
+    },
+    "oppositionVoteCount": {
+      "@id": "acc:oppositionVoteCount",
+      "@type": "xsd:integer"
+    },
+    "directionRule": {
+      "@id": "acc:directionRule",
+      "@type": "xsd:string"
+    },
+    "referenceOrientation": {
+      "@id": "acc:referenceOrientation",
+      "@type": "xsd:string"
+    },
+    "voteEdgeId": {
+      "@id": "acc:voteEdgeId",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "voteSourceLabel": {
+      "@id": "acc:voteSourceLabel",
+      "@type": "xsd:string"
+    },
+    "voteTargetLabel": {
+      "@id": "acc:voteTargetLabel",
+      "@type": "xsd:string"
+    },
+    "docVoteDetailJson": {
+      "@id": "acc:docVoteDetailJson",
+      "@type": "xsd:string"
+    },
+    "decisionEdgeId": {
+      "@id": "acc:decisionEdgeId",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "conflictKind": {
+      "@id": "acc:conflictKind",
+      "@type": "xsd:string"
+    },
+    "selected": {
+      "@id": "acc:selected",
+      "@type": "@id"
+    },
+    "dropped": {
+      "@id": "acc:dropped",
+      "@type": "@id"
+    },
+    "classification": {
+      "@id": "acc:classification",
+      "@type": "xsd:string"
+    },
+    "regimeDependent": {
+      "@id": "acc:regimeDependent",
+      "@type": "xsd:boolean"
+    },
+    "timeIndex": {
+      "@id": "acc:timeIndex",
+      "@type": "xsd:string",
+      "@container": "@set"
+    },
+    "stateNegation": {
+      "@id": "acc:stateNegation",
+      "@type": "xsd:boolean"
+    },
+    "stateTerm": {
+      "@id": "acc:stateTerm",
+      "@type": "xsd:string",
+      "@container": "@set"
+    },
+    "identityKey": {
+      "@id": "acc:identityKey",
+      "@type": "xsd:string"
+    },
+    "polarityStatus": {
+      "@id": "acc:polarityStatus",
+      "@type": "xsd:string"
+    },
+    "identityStatus": {
+      "@id": "acc:identityStatus",
+      "@type": "xsd:string"
+    },
+    "conditionStatus": {
+      "@id": "acc:conditionStatus",
+      "@type": "xsd:string"
+    },
+    "provisionalRecovery": {
+      "@id": "acc:provisionalRecovery",
+      "@type": "xsd:boolean"
+    },
+    "assertionRecovery": {
+      "@id": "acc:assertionRecovery",
+      "@type": "xsd:boolean"
+    },
+    "supportAwareEligible": {
+      "@id": "acc:supportAwareEligible",
+      "@type": "xsd:boolean"
+    },
+    "supportAwareStatus": {
+      "@id": "acc:supportAwareStatus",
+      "@type": "xsd:string"
+    },
+    "supportAwareReason": {
+      "@id": "acc:supportAwareReason",
+      "@type": "xsd:string"
+    },
+    "reason": {
+      "@id": "acc:reason",
+      "@type": "xsd:string"
+    },
+    "directionSupportForward": {
+      "@id": "acc:directionSupportForward",
+      "@type": "xsd:double"
+    },
+    "directionSupportReverse": {
+      "@id": "acc:directionSupportReverse",
+      "@type": "xsd:double"
+    },
+    "relationRoleSource": {
+      "@id": "acc:relationRoleSource",
+      "@type": "xsd:string"
+    },
+    "relationRoleTarget": {
+      "@id": "acc:relationRoleTarget",
+      "@type": "xsd:string"
+    },
+    "roleDirection": {
+      "@id": "acc:roleDirection",
+      "@type": "xsd:string"
+    },
+    "roleConflict": {
+      "@id": "acc:roleConflict",
+      "@type": "xsd:boolean"
+    },
+    "roleOverride": {
+      "@id": "acc:roleOverride",
+      "@type": "xsd:boolean"
+    },
+    "textualVoteSource": {
+      "@id": "acc:textualVoteSource",
+      "@type": "xsd:string"
+    },
+    "textualSpanForwardVotes": {
+      "@id": "acc:textualSpanForwardVotes",
+      "@type": "xsd:integer"
+    },
+    "textualSpanReverseVotes": {
+      "@id": "acc:textualSpanReverseVotes",
+      "@type": "xsd:integer"
+    },
+    "textualAttributeForwardVotes": {
+      "@id": "acc:textualAttributeForwardVotes",
+      "@type": "xsd:integer"
+    },
+    "textualAttributeReverseVotes": {
+      "@id": "acc:textualAttributeReverseVotes",
+      "@type": "xsd:integer"
+    },
+    "temporalMode": {
+      "@id": "acc:temporalMode",
+      "@type": "xsd:string"
+    },
+    "temporalAbstained": {
+      "@id": "acc:temporalAbstained",
+      "@type": "xsd:boolean"
+    },
+    "directnessClass": {
+      "@id": "acc:directnessClass",
+      "@type": "xsd:string"
+    },
+    "directnessReason": {
+      "@id": "acc:directnessReason",
+      "@type": "xsd:string"
+    },
+    "shortcutRisk": {
+      "@id": "acc:shortcutRisk",
+      "@type": "xsd:string"
+    },
+    "shortcutPathEdgeId": {
+      "@id": "acc:shortcutPathEdgeId",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "evidenceCompleteness": {
+      "@id": "acc:evidenceCompleteness",
+      "@type": "xsd:string"
+    },
+    "supportScope": {
+      "@id": "acc:supportScope",
+      "@type": "xsd:string"
+    },
+    "conditionGrounding": {
+      "@id": "acc:conditionGrounding",
+      "@type": "xsd:string"
+    },
+    "temporalConsistency": {
+      "@id": "acc:temporalConsistency",
+      "@type": "xsd:string"
+    },
+    "fractionConsistency": {
+      "@id": "acc:fractionConsistency",
+      "@type": "xsd:string"
+    },
+    "evidenceCoverageJson": {
+      "@id": "acc:evidenceCoverageJson",
+      "@type": "xsd:string"
+    },
+    "missingEvidenceComponent": {
+      "@id": "acc:missingEvidenceComponent",
+      "@type": "xsd:string",
+      "@container": "@set"
+    },
+    "evidenceWindowsJson": {
+      "@id": "acc:evidenceWindowsJson",
+      "@type": "xsd:string"
+    },
+    "evidenceWindowCount": {
+      "@id": "acc:evidenceWindowCount",
+      "@type": "xsd:integer"
+    },
+    "bestEvidenceWindowId": {
+      "@id": "acc:bestEvidenceWindowId",
+      "@type": "xsd:string"
+    },
+    "bestWindowKind": {
+      "@id": "acc:bestWindowKind",
+      "@type": "xsd:string"
+    },
+    "bestWindowSource": {
+      "@id": "acc:bestWindowSource",
+      "@type": "xsd:string"
+    },
+    "bestWindowWidth": {
+      "@id": "acc:bestWindowWidth",
+      "@type": "xsd:integer"
+    },
+    "evidenceExactMatch": {
+      "@id": "acc:evidenceExactMatch",
+      "@type": "xsd:boolean"
+    },
+    "contextWindowComplete": {
+      "@id": "acc:contextWindowComplete",
+      "@type": "xsd:boolean"
+    },
+    "evidenceContractComplete": {
+      "@id": "acc:evidenceContractComplete",
+      "@type": "xsd:boolean"
+    },
+    "evidenceContractJson": {
+      "@id": "acc:evidenceContractJson",
+      "@type": "xsd:string"
+    },
+    "evidencePackagingStage": {
+      "@id": "acc:evidencePackagingStage",
+      "@type": "xsd:string"
+    },
+    "verifierSupportScope": {
+      "@id": "acc:verifierSupportScope",
+      "@type": "xsd:string"
+    },
+    "verifierWindowKind": {
+      "@id": "acc:verifierWindowKind",
+      "@type": "xsd:string"
+    },
+    "verifierWindowId": {
+      "@id": "acc:verifierWindowId",
+      "@type": "xsd:string"
+    },
+    "canonicalArbitrationJson": {
+      "@id": "acc:canonicalArbitrationJson",
+      "@type": "xsd:string"
+    },    "preVerificationEvidenceJson": {
+      "@id": "acc:preVerificationEvidenceJson",
+      "@type": "xsd:string"
+    },    "evidencePackagingVersion": {
+      "@id": "acc:evidencePackagingVersion",
+      "@type": "xsd:string"
+    }
+  }
+}

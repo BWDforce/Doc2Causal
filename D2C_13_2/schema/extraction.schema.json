@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/d2c/acc/extraction.schema.json",
+  "title": "D2C_13_2 document extraction",
+  "type": "object",
+  "required": ["entities", "links", "chains"],
+  "properties": {
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type", "description"],
+        "properties": {
+          "name": {"type": "string"},
+          "type": {"enum": ["condition", "measurement", "event", "action", "string"]},
+          "description": {"type": "string"},
+          "aliases": {"type": "array", "items": {"type": "string"}},
+          "quote": {"type": "string"},
+          "span": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["cause", "effect", "quote", "sign", "rung", "condition", "mechanism", "direct_evidence"],
+        "properties": {
+          "cause": {"type": "string"},
+          "effect": {"type": "string"},
+          "quote": {"type": "string"},
+          "span": {"type": ["string", "null"]},
+          "sign": {"enum": ["+", "-", "0", ""]},
+          "rung": {"type": ["integer", "string"]},
+          "condition": {"type": "string"},
+          "mechanism": {"type": "string"},
+          "direct_evidence": {"type": "boolean"}
+        }
+      }
+    },
+    "chains": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["steps", "quote"],
+        "properties": {
+          "steps": {"type": "array", "minItems": 2, "items": {"type": "string"}},
+          "quote": {"type": "string"},
+          "span": {"type": ["string", "null"]}
+        }
+      }
+    }
+  }
+}
+

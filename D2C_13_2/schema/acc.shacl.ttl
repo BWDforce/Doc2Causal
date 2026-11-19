@@ -1,0 +1,157 @@
+@prefix acc: <https://w3id.org/d2c/acc#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+acc:EdgeBaseShape a sh:NodeShape ;
+  sh:targetClass acc:RetainedEdge ;
+  sh:property [
+    sh:path acc:source ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI
+  ] ;
+  sh:property [
+    sh:path acc:target ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI
+  ] ;
+  sh:property [
+    sh:path acc:edgeKind ; sh:minCount 1 ; sh:maxCount 1 ; sh:pattern "^(direct_core|conditional|regime|transitive_derived|candidate|unsupported_hypothesis|hypothesis|rejected)$"
+  ] ;
+  sh:property [
+    sh:path acc:verificationStatus ; sh:minCount 1 ; sh:maxCount 1
+  ] ;
+  sh:property [
+    sh:path acc:claimScope ; sh:maxCount 1 ;
+    sh:pattern "^(direct|composed|conditional|regime|hypothesis|unknown)$"
+  ] ;
+  sh:property [
+    sh:path acc:evidenceGrade ; sh:maxCount 1 ;
+    sh:pattern "^(span_grounded|assertion_grounded|span_only|derived_path|context_only|none)$"
+  ] ;
+  sh:property [
+    sh:path acc:verificationState ; sh:maxCount 1 ;
+    sh:pattern "^(unverified|accepted|conditional|transitive|needs_review|unsupported|rejected|advisory)$"
+  ] ;
+  sh:property [
+    sh:path acc:assertionSupport ; sh:maxCount 1
+  ] ;
+  sh:property [
+    sh:path acc:promotionStatus ; sh:maxCount 1 ;
+    sh:pattern "^(core|soft_core|partial_forward_core|needs_review|excluded|none)$"
+  ] ;
+  sh:property [
+    sh:path acc:softCoreEligible ; sh:maxCount 1 ; sh:datatype xsd:boolean
+  ] ;
+  sh:property [
+    sh:path acc:partialForwardPromotion ; sh:maxCount 1 ; sh:datatype xsd:boolean
+  ] ;
+  sh:property [ sh:path acc:directionSupportForward ; sh:maxCount 1 ; sh:datatype xsd:double ] ;
+  sh:property [ sh:path acc:directionSupportReverse ; sh:maxCount 1 ; sh:datatype xsd:double ] ;
+  sh:property [ sh:path acc:relationRoleSource ; sh:maxCount 1 ] ;
+  sh:property [ sh:path acc:relationRoleTarget ; sh:maxCount 1 ] ;
+  sh:property [ sh:path acc:roleDirection ; sh:maxCount 1 ] ;
+  sh:property [ sh:path acc:roleConflict ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ;
+  sh:property [ sh:path acc:roleOverride ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ;
+  sh:property [ sh:path acc:textualVoteSource ; sh:maxCount 1 ] ;
+  sh:property [ sh:path acc:textualSpanForwardVotes ; sh:maxCount 1 ; sh:datatype xsd:integer ] ;
+  sh:property [ sh:path acc:textualSpanReverseVotes ; sh:maxCount 1 ; sh:datatype xsd:integer ] ;
+  sh:property [ sh:path acc:textualAttributeForwardVotes ; sh:maxCount 1 ; sh:datatype xsd:integer ] ;
+  sh:property [ sh:path acc:textualAttributeReverseVotes ; sh:maxCount 1 ; sh:datatype xsd:integer ] ;
+  sh:property [ sh:path acc:temporalMode ; sh:maxCount 1 ] ;
+  sh:property [ sh:path acc:temporalAbstained ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ;
+  sh:property [ sh:path acc:directnessClass ; sh:maxCount 1 ] ;
+  sh:property [ sh:path acc:directnessReason ; sh:maxCount 1 ] ;
+  sh:property [ sh:path acc:shortcutRisk ; sh:maxCount 1 ] ;
+  sh:property [ sh:path acc:shortcutPathEdgeId ; sh:nodeKind sh:IRI ] ;
+  sh:property [
+    sh:path acc:evidenceCompleteness ; sh:maxCount 1 ;
+    sh:pattern "^(exact|context_assisted|partial|assertion_only|candidate_only|path_only|absent)$"
+  ] ;
+  sh:property [
+    sh:path acc:supportScope ; sh:maxCount 1 ;
+    sh:pattern "^(exact_span|exact_sentence_window|context_assisted|context_window|partial_window|assertion_only|candidate|path_derived|none)$"
+  ] ;
+  sh:property [
+    sh:path acc:verifierSupportScope ; sh:maxCount 1 ;
+    sh:pattern "^(exact_span|exact_sentence_window|context_assisted|context_window|partial_window|assertion_only|candidate|path_derived|none)$"
+  ] ;
+  sh:property [
+    sh:path acc:bestWindowKind ; sh:maxCount 1 ;
+    sh:pattern "^(exact_span|exact_window|context|context_partial|partial|assertion_only|original|absent|none)$"
+  ] ;
+  sh:property [ sh:path acc:evidenceExactMatch ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ;
+  sh:property [ sh:path acc:contextWindowComplete ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ;
+  sh:property [ sh:path acc:evidenceContractComplete ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ;
+  sh:property [ sh:path acc:evidenceContractJson ; sh:maxCount 1 ; sh:datatype xsd:string ] ;
+  sh:property [ sh:path acc:bestWindowWidth ; sh:maxCount 1 ; sh:datatype xsd:integer ] .
+
+acc:CoreEdgeShape a sh:NodeShape ;
+  sh:targetClass acc:DirectCoreEdge ;
+  sh:property [ sh:path acc:hasAssertion ; sh:minCount 1 ] ;
+  sh:property [ sh:path acc:hasSpan ; sh:minCount 1 ] ;
+  sh:property [ sh:path acc:hasDocumentSupport ; sh:minCount 1 ] ;
+  sh:sparql [
+    sh:message "direct_core must not be a self-loop" ;
+    sh:severity sh:Violation ;
+    sh:select """
+      SELECT $this ?value
+      WHERE {
+        $this acc:source ?s ; acc:target ?t .
+        FILTER(?s = ?t)
+        BIND(?s AS ?value)
+      }
+    """
+  ] .
+
+acc:ConditionalEdgeShape a sh:NodeShape ;
+  sh:targetClass acc:ConditionalEdge ;
+  sh:property [ sh:path acc:condition ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] .
+
+acc:RegimeEdgeShape a sh:NodeShape ;
+  sh:targetClass acc:RegimeEdge ;
+  sh:property [ sh:path acc:condition ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] .
+
+acc:TransitiveEdgeShape a sh:NodeShape ;
+  sh:targetClass acc:TransitiveDerivedEdge ;
+  sh:property [ sh:path acc:derivedFrom ; sh:minCount 1 ] .
+
+acc:CandidateEdgeShape a sh:NodeShape ;
+  sh:targetClass acc:CandidateEdge ;
+  sh:property [ sh:path acc:hasDocumentSupport ; sh:maxCount 0 ] ;
+  sh:property [ sh:path acc:hasSpan ; sh:maxCount 0 ] ;
+  sh:or (
+    [ sh:path acc:candidateAssertion ; sh:minCount 1 ]
+    [ sh:path acc:candidateSpan ; sh:minCount 1 ]
+    [ sh:path acc:candidateDocument ; sh:minCount 1 ]
+    [ sh:path acc:candidateDerivation ; sh:minCount 1 ]
+  ) .
+
+acc:UnsupportedHypothesisShape a sh:NodeShape ;
+  sh:targetClass acc:UnsupportedHypothesisEdge ;
+  sh:property [ sh:path acc:hasDocumentSupport ; sh:maxCount 0 ] ;
+  sh:property [ sh:path acc:hasSpan ; sh:maxCount 0 ] ;
+  sh:property [ sh:path acc:candidateAssertion ; sh:maxCount 0 ] ;
+  sh:property [ sh:path acc:candidateSpan ; sh:maxCount 0 ] .
+
+acc:HypothesisEdgeShape a sh:NodeShape ;
+  sh:targetClass acc:HypothesisEdge ;
+  sh:property [ sh:path acc:hasDocumentSupport ; sh:maxCount 0 ] ;
+  sh:property [ sh:path acc:hasSpan ; sh:maxCount 0 ] .
+
+acc:EntityShape a sh:NodeShape ;
+  sh:targetClass acc:Entity ;
+  sh:property [ sh:path acc:label ; sh:minCount 1 ; sh:maxCount 1 ] .
+
+acc:SpanShape a sh:NodeShape ;
+  sh:targetClass acc:Span ;
+  sh:property [ sh:path acc:docId ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path acc:start ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:integer ] ;
+  sh:property [ sh:path acc:end ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:integer ] .
+
+acc:AssertionShape a sh:NodeShape ;
+  sh:targetClass acc:Assertion ;
+  sh:property [ sh:path acc:source ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ;
+  sh:property [ sh:path acc:target ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ;
+  sh:property [ sh:path acc:docId ; sh:minCount 1 ; sh:maxCount 1 ] .
+
+acc:ConditionShape a sh:NodeShape ;
+  sh:targetClass acc:Condition ;
+  sh:property [ sh:path acc:equivalenceKey ; sh:minCount 1 ; sh:maxCount 1 ] .
+
+

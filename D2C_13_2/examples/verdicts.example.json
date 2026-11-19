@@ -1,0 +1,9 @@
+[
+  {
+    "edge_id": "urn:d2c:edge:REPLACE_ME",
+    "verdict": "entailed",
+    "direction": "u->v",
+    "condition": "",
+    "reason": "Replace with an external semantic verifier or human adjudication result."
+  }
+]

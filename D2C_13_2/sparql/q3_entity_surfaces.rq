@@ -1,0 +1,11 @@
+PREFIX acc: <https://w3id.org/d2c/acc#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT ?entity ?label ?alias
+WHERE {
+  ?edge a acc:RetainedEdge ;
+        (acc:source|acc:target) ?entity .
+  OPTIONAL { ?entity acc:label ?label . }
+  OPTIONAL { ?entity acc:alias ?alias . }
+}
+ORDER BY ?entity ?label ?alias

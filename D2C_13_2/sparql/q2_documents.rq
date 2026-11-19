@@ -1,0 +1,14 @@
+PREFIX acc: <https://w3id.org/d2c/acc#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT ?edge ?document ?doc_id ?title ?source_file
+WHERE {
+  ?edge a acc:RetainedEdge .
+  OPTIONAL {
+    ?edge acc:hasDocumentSupport ?document .
+    OPTIONAL { ?document acc:docId ?doc_id . }
+    OPTIONAL { ?document acc:title ?title . }
+    OPTIONAL { ?document acc:sourceFile ?source_file . }
+  }
+}
+ORDER BY ?edge ?doc_id ?document

@@ -1,0 +1,144 @@
+@prefix acc: <https://w3id.org/d2c/acc#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+acc:ACCOntology a owl:Ontology ;
+  owl:imports <http://www.w3.org/ns/prov-o> ;
+  dcterms:conformsTo <http://www.w3.org/ns/prov-o> ;
+  rdfs:label "D2C_13_2 Auditable Causal Contract Ontology" ;
+  rdfs:comment "Lightweight exchange ontology aligned with PROV-O for provenance records. No OWL-DL reasoning claim is made." .
+
+acc:Artifact a owl:Class ; rdfs:subClassOf prov:Entity .
+acc:Document a owl:Class ; rdfs:subClassOf prov:Entity .
+acc:Span a owl:Class ; rdfs:subClassOf prov:Entity .
+acc:Entity a owl:Class ; rdfs:subClassOf prov:Entity .
+acc:Assertion a owl:Class ; rdfs:subClassOf prov:Entity .
+acc:Condition a owl:Class ; rdfs:subClassOf prov:Entity .
+acc:RetainedEdge a owl:Class ; rdfs:subClassOf prov:Entity .
+acc:ArtifactCompilationActivity a owl:Class ; rdfs:subClassOf prov:Activity .
+acc:DirectCoreEdge a owl:Class ; rdfs:subClassOf acc:RetainedEdge .
+acc:ConditionalEdge a owl:Class ; rdfs:subClassOf acc:RetainedEdge .
+acc:RegimeEdge a owl:Class ; rdfs:subClassOf acc:RetainedEdge .
+acc:TransitiveDerivedEdge a owl:Class ; rdfs:subClassOf acc:RetainedEdge .
+acc:CandidateEdge a owl:Class ; rdfs:subClassOf acc:RetainedEdge .
+acc:UnsupportedHypothesisEdge a owl:Class ; rdfs:subClassOf acc:RetainedEdge .
+acc:HypothesisEdge a owl:Class ; rdfs:subClassOf acc:RetainedEdge .
+acc:RejectedEdge a owl:Class ; rdfs:subClassOf acc:RetainedEdge .
+acc:ConflictDecision a owl:Class ; rdfs:subClassOf prov:Entity .
+acc:CycleDecision a owl:Class ; rdfs:subClassOf prov:Entity .
+acc:Vote a owl:Class ; rdfs:subClassOf prov:Entity .
+
+acc:source a owl:ObjectProperty .
+acc:target a owl:ObjectProperty .
+acc:hasEntity a owl:ObjectProperty .
+acc:hasEdge a owl:ObjectProperty .
+acc:hasAssertion a owl:ObjectProperty ; rdfs:subPropertyOf prov:wasDerivedFrom .
+acc:hasSpan a owl:ObjectProperty .
+acc:hasDocumentSupport a owl:ObjectProperty .
+acc:candidateAssertion a owl:ObjectProperty ; rdfs:subPropertyOf prov:wasDerivedFrom .
+acc:candidateSpan a owl:ObjectProperty .
+acc:candidateDocument a owl:ObjectProperty .
+acc:candidateDerivation a owl:ObjectProperty .
+acc:condition a owl:ObjectProperty .
+acc:derivedFrom a owl:ObjectProperty ; rdfs:subPropertyOf prov:wasDerivedFrom .
+acc:ofSpan a owl:ObjectProperty .
+acc:ofDocument a owl:ObjectProperty .
+acc:selected a owl:ObjectProperty .
+acc:pair a owl:ObjectProperty .
+acc:decisionEdgeId a owl:ObjectProperty .
+acc:removedEdge a owl:DatatypeProperty .
+acc:direction a owl:DatatypeProperty .
+acc:supportDocument a owl:DatatypeProperty .
+acc:oppositionDocument a owl:DatatypeProperty .
+acc:uncertainDocument a owl:DatatypeProperty .
+acc:forwardDocument a owl:DatatypeProperty .
+acc:reverseDocument a owl:DatatypeProperty .
+acc:supportVoteCount a owl:DatatypeProperty .
+acc:oppositionVoteCount a owl:DatatypeProperty .
+acc:directionRule a owl:DatatypeProperty .
+acc:referenceOrientation a owl:DatatypeProperty .
+acc:voteEdgeId a owl:ObjectProperty .
+acc:voteSourceLabel a owl:DatatypeProperty .
+acc:voteTargetLabel a owl:DatatypeProperty .
+acc:docVoteDetailJson a owl:DatatypeProperty .
+acc:provenance a owl:DatatypeProperty .
+acc:dropped a owl:ObjectProperty .
+acc:edgeKind a owl:DatatypeProperty .
+acc:verificationStatus a owl:DatatypeProperty .
+acc:directionStatus a owl:DatatypeProperty .
+acc:directionAudit a owl:DatatypeProperty .
+acc:pathSummary a owl:DatatypeProperty .
+acc:pathSummaryExplicitDirect a owl:DatatypeProperty .
+acc:supportMode a owl:DatatypeProperty .
+acc:supportStrength a owl:DatatypeProperty .
+acc:claimScope a owl:DatatypeProperty .
+acc:evidenceGrade a owl:DatatypeProperty .
+acc:candidateSupportMode a owl:DatatypeProperty .
+acc:candidateSupportStrength a owl:DatatypeProperty .
+acc:candidateOrigin a owl:DatatypeProperty .
+acc:candidateTier a owl:DatatypeProperty .
+acc:candidateEvidence a owl:ObjectProperty .
+acc:evidenceUnion a owl:ObjectProperty .
+acc:directSupport a owl:DatatypeProperty .
+acc:assertionSupport a owl:DatatypeProperty .
+acc:promotionStatus a owl:DatatypeProperty .
+acc:softCoreEligible a owl:DatatypeProperty .
+acc:partialForwardPromotion a owl:DatatypeProperty .
+acc:pathSupport a owl:DatatypeProperty .
+acc:conditionSupport a owl:DatatypeProperty .
+acc:verificationCoverage a owl:DatatypeProperty .
+acc:verifierSupport a owl:DatatypeProperty .
+acc:verifierSupportScope a owl:DatatypeProperty .
+acc:verifierWindowKind a owl:DatatypeProperty .
+acc:verifierWindowId a owl:DatatypeProperty .
+acc:verifierDirection a owl:DatatypeProperty .
+acc:verifierRecommendedKind a owl:DatatypeProperty .
+acc:verificationState a owl:DatatypeProperty .
+acc:conditionKind a owl:DatatypeProperty .
+acc:directionSupportForward a owl:DatatypeProperty .
+acc:directionSupportReverse a owl:DatatypeProperty .
+acc:relationRoleSource a owl:DatatypeProperty .
+acc:relationRoleTarget a owl:DatatypeProperty .
+acc:roleDirection a owl:DatatypeProperty .
+acc:roleConflict a owl:DatatypeProperty .
+acc:roleOverride a owl:DatatypeProperty .
+acc:textualVoteSource a owl:DatatypeProperty .
+acc:textualSpanForwardVotes a owl:DatatypeProperty .
+acc:textualSpanReverseVotes a owl:DatatypeProperty .
+acc:textualAttributeForwardVotes a owl:DatatypeProperty .
+acc:textualAttributeReverseVotes a owl:DatatypeProperty .
+acc:temporalMode a owl:DatatypeProperty .
+acc:temporalAbstained a owl:DatatypeProperty .
+acc:directnessClass a owl:DatatypeProperty .
+acc:directnessReason a owl:DatatypeProperty .
+acc:shortcutRisk a owl:DatatypeProperty .
+acc:shortcutPathEdgeId a owl:ObjectProperty .
+acc:confidence a owl:DatatypeProperty .
+acc:mechanism a owl:DatatypeProperty .
+acc:label a owl:DatatypeProperty .
+acc:contextText a owl:DatatypeProperty .
+acc:text a owl:DatatypeProperty .
+acc:evidenceCompleteness a owl:DatatypeProperty .
+acc:supportScope a owl:DatatypeProperty .
+acc:conditionGrounding a owl:DatatypeProperty .
+acc:temporalConsistency a owl:DatatypeProperty .
+acc:fractionConsistency a owl:DatatypeProperty .
+acc:evidenceCoverageJson a owl:DatatypeProperty .
+acc:missingEvidenceComponent a owl:DatatypeProperty .
+acc:evidenceWindowsJson a owl:DatatypeProperty .
+acc:evidenceWindowCount a owl:DatatypeProperty .
+acc:bestEvidenceWindowId a owl:DatatypeProperty .
+acc:bestWindowKind a owl:DatatypeProperty .
+acc:bestWindowSource a owl:DatatypeProperty .
+acc:bestWindowWidth a owl:DatatypeProperty .
+acc:evidenceExactMatch a owl:DatatypeProperty .
+acc:contextWindowComplete a owl:DatatypeProperty .
+acc:evidenceContractComplete a owl:DatatypeProperty .
+acc:evidenceContractJson a owl:DatatypeProperty .
+acc:evidencePackagingStage a owl:DatatypeProperty .
+acc:preVerificationEvidenceJson a owl:DatatypeProperty .
+acc:evidencePackagingVersion a owl:DatatypeProperty .
+acc:canonicalArbitrationJson a owl:DatatypeProperty .

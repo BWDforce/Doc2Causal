@@ -1,0 +1,166 @@
+{
+  "entries": [
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\790ec896e9ecc11deb139ce217747b9ca25255f0b182f5b3847a7c2c5b0cd645",
+      "corpus": "water",
+      "created": false,
+      "key": "790ec896e9ecc11deb139ce217747b9ca25255f0b182f5b3847a7c2c5b0cd645",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\790ec896e9ecc11deb139ce217747b9ca25255f0b182f5b3847a7c2c5b0cd645\\cache_manifest.json",
+      "run": "run_01",
+      "theme": "industrial water treatment plant process"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\0b910d86a473cb92f91c3667eb3c40e08ee2048b93e450f566a6fe1ab78c1f97",
+      "corpus": "water",
+      "created": false,
+      "key": "0b910d86a473cb92f91c3667eb3c40e08ee2048b93e450f566a6fe1ab78c1f97",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\0b910d86a473cb92f91c3667eb3c40e08ee2048b93e450f566a6fe1ab78c1f97\\cache_manifest.json",
+      "run": "run_02",
+      "theme": "industrial water treatment plant process"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\882c4289cd19c300691cf764eb856590af970391c2dd7a2d2de9264d600ed5a8",
+      "corpus": "water",
+      "created": true,
+      "key": "882c4289cd19c300691cf764eb856590af970391c2dd7a2d2de9264d600ed5a8",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\882c4289cd19c300691cf764eb856590af970391c2dd7a2d2de9264d600ed5a8\\cache_manifest.json",
+      "run": "run_03",
+      "theme": "industrial water treatment plant process"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\083f961f0fc8e92901fac000250f932099ca67d0ba9569f65c4899a53384de33",
+      "corpus": "water",
+      "created": true,
+      "key": "083f961f0fc8e92901fac000250f932099ca67d0ba9569f65c4899a53384de33",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\083f961f0fc8e92901fac000250f932099ca67d0ba9569f65c4899a53384de33\\cache_manifest.json",
+      "run": "run_04",
+      "theme": "industrial water treatment plant process"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\000b5c0fdbc667ac9f148ca58d6dbc06fbcc5fa9d9c96e32f7bc93126a0d0b2f",
+      "corpus": "water",
+      "created": true,
+      "key": "000b5c0fdbc667ac9f148ca58d6dbc06fbcc5fa9d9c96e32f7bc93126a0d0b2f",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\000b5c0fdbc667ac9f148ca58d6dbc06fbcc5fa9d9c96e32f7bc93126a0d0b2f\\cache_manifest.json",
+      "run": "run_05",
+      "theme": "industrial water treatment plant process"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\a4b8ce042bc91930a8f805e6ca054bfa6a942b216f30c83a033d772f15dd7ad5",
+      "corpus": "water",
+      "created": true,
+      "key": "a4b8ce042bc91930a8f805e6ca054bfa6a942b216f30c83a033d772f15dd7ad5",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\a4b8ce042bc91930a8f805e6ca054bfa6a942b216f30c83a033d772f15dd7ad5\\cache_manifest.json",
+      "run": "run_06",
+      "theme": "industrial water treatment plant process"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\9b2d36f8163ea8fa8e95d28cdc758a763927227fa58bb96fabbf1fd940baf583",
+      "corpus": "water",
+      "created": true,
+      "key": "9b2d36f8163ea8fa8e95d28cdc758a763927227fa58bb96fabbf1fd940baf583",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\9b2d36f8163ea8fa8e95d28cdc758a763927227fa58bb96fabbf1fd940baf583\\cache_manifest.json",
+      "run": "run_07",
+      "theme": "industrial water treatment plant process"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\a29e894fdc7e77a663ad24fcc3f2442b73ff6a92bd155d3929224c11fab2152e",
+      "corpus": "water",
+      "created": true,
+      "key": "a29e894fdc7e77a663ad24fcc3f2442b73ff6a92bd155d3929224c11fab2152e",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\a29e894fdc7e77a663ad24fcc3f2442b73ff6a92bd155d3929224c11fab2152e\\cache_manifest.json",
+      "run": "run_08",
+      "theme": "industrial water treatment plant process"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\633d55f167d8f1dd8678130e260f174745f10e5ab5f24b901640c7b064a0f758",
+      "corpus": "water",
+      "created": true,
+      "key": "633d55f167d8f1dd8678130e260f174745f10e5ab5f24b901640c7b064a0f758",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\633d55f167d8f1dd8678130e260f174745f10e5ab5f24b901640c7b064a0f758\\cache_manifest.json",
+      "run": "run_09",
+      "theme": "industrial water treatment plant process"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\439d179625a475102283c72a14edfa6aacc0edb209c26776ef364c013b694a39",
+      "corpus": "win95pts",
+      "created": true,
+      "key": "439d179625a475102283c72a14edfa6aacc0edb209c26776ef364c013b694a39",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\439d179625a475102283c72a14edfa6aacc0edb209c26776ef364c013b694a39\\cache_manifest.json",
+      "run": "run_01",
+      "theme": "printer hardware and software troubleshooting"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\e51993c9b0c99b0fd774ca65023a424ca019b0ed9033a700baa40a32a6c04b94",
+      "corpus": "win95pts",
+      "created": true,
+      "key": "e51993c9b0c99b0fd774ca65023a424ca019b0ed9033a700baa40a32a6c04b94",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\e51993c9b0c99b0fd774ca65023a424ca019b0ed9033a700baa40a32a6c04b94\\cache_manifest.json",
+      "run": "run_02",
+      "theme": "printer hardware and software troubleshooting"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\a830280574334e3afa0d2777fe3465556fa0987f4e03955a99fa664977cdc367",
+      "corpus": "win95pts",
+      "created": true,
+      "key": "a830280574334e3afa0d2777fe3465556fa0987f4e03955a99fa664977cdc367",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\a830280574334e3afa0d2777fe3465556fa0987f4e03955a99fa664977cdc367\\cache_manifest.json",
+      "run": "run_03",
+      "theme": "printer hardware and software troubleshooting"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\5b1fba2a7589d56f3c29c7a54f1a95f104a5560fc9252f2f9948368620a661b3",
+      "corpus": "win95pts",
+      "created": true,
+      "key": "5b1fba2a7589d56f3c29c7a54f1a95f104a5560fc9252f2f9948368620a661b3",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\5b1fba2a7589d56f3c29c7a54f1a95f104a5560fc9252f2f9948368620a661b3\\cache_manifest.json",
+      "run": "run_04",
+      "theme": "printer hardware and software troubleshooting"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\fa18314139cd85b5569907173ee36ecc2a3357bca7af963e72ef4136b614cfcf",
+      "corpus": "win95pts",
+      "created": true,
+      "key": "fa18314139cd85b5569907173ee36ecc2a3357bca7af963e72ef4136b614cfcf",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\fa18314139cd85b5569907173ee36ecc2a3357bca7af963e72ef4136b614cfcf\\cache_manifest.json",
+      "run": "run_05",
+      "theme": "printer hardware and software troubleshooting"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\ceb9bcfe1f5cd9e65a4b6517b6d1e45643e5b063324accf0336fd034ce4fefce",
+      "corpus": "win95pts",
+      "created": true,
+      "key": "ceb9bcfe1f5cd9e65a4b6517b6d1e45643e5b063324accf0336fd034ce4fefce",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\ceb9bcfe1f5cd9e65a4b6517b6d1e45643e5b063324accf0336fd034ce4fefce\\cache_manifest.json",
+      "run": "run_06",
+      "theme": "printer hardware and software troubleshooting"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\571275b8f3a81b97627305c504559b61b2b593660139d5847eeb404208f1c872",
+      "corpus": "win95pts",
+      "created": true,
+      "key": "571275b8f3a81b97627305c504559b61b2b593660139d5847eeb404208f1c872",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\571275b8f3a81b97627305c504559b61b2b593660139d5847eeb404208f1c872\\cache_manifest.json",
+      "run": "run_07",
+      "theme": "printer hardware and software troubleshooting"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\af9f0966a0d090fd9f70ea3deafb4767f78c0028016e19f7ba05a0c9fcfc1f00",
+      "corpus": "win95pts",
+      "created": true,
+      "key": "af9f0966a0d090fd9f70ea3deafb4767f78c0028016e19f7ba05a0c9fcfc1f00",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\af9f0966a0d090fd9f70ea3deafb4767f78c0028016e19f7ba05a0c9fcfc1f00\\cache_manifest.json",
+      "run": "run_08",
+      "theme": "printer hardware and software troubleshooting"
+    },
+    {
+      "cache_dir": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\9adf245845fbefc90352bab652bcc6b1d5b8dbc6c05310ff74b3c38056e81209",
+      "corpus": "win95pts",
+      "created": true,
+      "key": "9adf245845fbefc90352bab652bcc6b1d5b8dbc6c05310ff74b3c38056e81209",
+      "manifest": "D:\\causal extract\\causal-cartographer\\D2C_13_2\\.cache\\content-addressed\\lang7_extract\\9adf245845fbefc90352bab652bcc6b1d5b8dbc6c05310ff74b3c38056e81209\\cache_manifest.json",
+      "run": "run_09",
+      "theme": "printer hardware and software troubleshooting"
+    }
+  ]
+}

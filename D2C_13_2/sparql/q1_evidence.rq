@@ -1,0 +1,46 @@
+PREFIX acc: <https://w3id.org/d2c/acc#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT
+  ?edge ?assertion ?assertion_text ?channel ?doc_id ?span ?span_text ?sign ?rung
+  ?support_scope ?evidence_completeness ?condition_grounding
+  ?evidence_contract_complete ?evidence_contract_json ?evidence_coverage_json
+  ?best_evidence_window_id ?best_window_kind ?best_window_source ?best_window_width
+  ?evidence_exact_match ?context_window_complete ?verifier_support_scope
+WHERE {
+  ?edge a acc:RetainedEdge .
+
+  OPTIONAL { ?edge acc:supportScope ?support_scope . }
+  OPTIONAL { ?edge acc:evidenceCompleteness ?evidence_completeness . }
+  OPTIONAL { ?edge acc:conditionGrounding ?condition_grounding . }
+  OPTIONAL { ?edge acc:evidenceContractComplete ?evidence_contract_complete . }
+  OPTIONAL { ?edge acc:evidenceContractJson ?evidence_contract_json . }
+  OPTIONAL { ?edge acc:evidenceCoverageJson ?evidence_coverage_json . }
+  OPTIONAL { ?edge acc:bestEvidenceWindowId ?best_evidence_window_id . }
+  OPTIONAL { ?edge acc:bestWindowKind ?best_window_kind . }
+  OPTIONAL { ?edge acc:bestWindowSource ?best_window_source . }
+  OPTIONAL { ?edge acc:bestWindowWidth ?best_window_width . }
+  OPTIONAL { ?edge acc:evidenceExactMatch ?evidence_exact_match . }
+  OPTIONAL { ?edge acc:contextWindowComplete ?context_window_complete . }
+  OPTIONAL { ?edge acc:verifierSupportScope ?verifier_support_scope . }
+
+  OPTIONAL {
+    ?edge acc:hasAssertion ?assertion .
+    OPTIONAL { ?assertion acc:mechanism ?assertion_text . }
+    OPTIONAL { ?assertion acc:channel ?channel . }
+    OPTIONAL { ?assertion acc:docId ?doc_id . }
+    OPTIONAL { ?assertion acc:sign ?sign . }
+    OPTIONAL { ?assertion acc:rung ?rung . }
+    OPTIONAL {
+      ?assertion acc:ofSpan ?span .
+      OPTIONAL { ?span acc:text ?span_text . }
+    }
+  }
+
+  FILTER (
+    !BOUND(?assertion)
+    || COALESCE(STR(?support_scope), "") = "assertion_only"
+    || (BOUND(?span_text) && STRLEN(STR(?span_text)) > 0)
+  )
+}
+ORDER BY ?edge ?doc_id ?span ?assertion

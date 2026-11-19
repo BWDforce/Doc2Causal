@@ -1,0 +1,27 @@
+PREFIX acc: <https://w3id.org/d2c/acc#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT
+  ?edge ?condition ?raw ?normalized ?equivalence_key ?condition_kind
+  ?assertion ?span ?doc_id ?span_text
+WHERE {
+  ?edge a acc:RetainedEdge .
+
+  OPTIONAL {
+    ?edge acc:condition ?condition .
+    OPTIONAL { ?condition acc:raw ?raw . }
+    OPTIONAL { ?condition acc:normalized ?normalized . }
+    OPTIONAL { ?condition acc:equivalenceKey ?equivalence_key . }
+    OPTIONAL { ?condition acc:conditionKind ?condition_kind . }
+  }
+
+  OPTIONAL {
+    ?edge acc:hasAssertion ?assertion .
+    OPTIONAL { ?assertion acc:docId ?doc_id . }
+    OPTIONAL {
+      ?assertion acc:ofSpan ?span .
+      OPTIONAL { ?span acc:text ?span_text . }
+    }
+  }
+}
+ORDER BY ?edge ?doc_id ?span ?assertion

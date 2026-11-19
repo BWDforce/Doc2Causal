@@ -1,0 +1,109 @@
+{
+  "schema_version": "D2C_13_2",
+  "extractor": {
+    "model": "deepseek-flash",
+    "base_url": "https://api.deepseek.com",
+    "api_key_env": "DEEPSEEK_API_KEY",
+    "max_tokens": 200000,
+    "timeout": 1800
+  },
+  "verifier": {
+    "model": "deepseek-flash",
+    "base_url": "https://api.deepseek.com",
+    "api_key_env": "DEEPSEEK_API_KEY",
+    "max_tokens": 200000,
+    "timeout": 600,
+    "batch_size": 10,
+    "retries": 3,
+    "retry_backoff": 15,
+    "completion_retries": 2
+  },
+  "promotion": {
+    "name": "balanced_recall",
+    "soft_core_tiers": [
+      "high",
+      "medium"
+    ],
+    "support_aware_tiers": [
+      "high",
+      "medium"
+    ],
+    "candidate_support_modes": [
+      "direct_span",
+      "assertion_only",
+      "span_only",
+      "weak_candidate"
+    ],
+    "exclude_low": true,
+    "exclude_negated": true,
+    "exclude_identity_conflict": true,
+    "exclude_ambiguous_direction": true,
+    "exclude_unresolved_path_summary": true,
+    "require_verifier_for_provisional": true,
+    "allow_partial_forward": true,
+    "primary_view": "soft_core_balanced",
+    "require_complete_evidence_contract": false,
+    "require_complete_evidence_contract_for_acceptance": false,
+    "exclude_candidate_conflict": true,
+    "exclude_candidate_cycle": true,
+    "require_canonical_support": false,
+    "canonical_support_min_documents": 1
+  },
+  "entity_resolution": {
+    "enabled": true,
+    "auto_merge_threshold": 0.97,
+    "review_threshold": 0.84,
+    "mode": "exact_and_alias_review",
+    "document_alias": {
+      "enabled": true,
+      "max_review_per_entity": 2,
+      "embedding_auto_threshold": 0.93,
+      "embedding_review_threshold": 0.8,
+      "auto_merge_policy": "exact_or_context_definition_or_multisignal_document_context",
+      "relation_role_guard": true
+    }
+  },
+  "path_control": {
+    "enabled": true,
+    "include_candidate_edges": true,
+    "high_risk_requires_direct_evidence": true
+  },
+  "evidence_gate": {
+    "enabled": true,
+    "exact_view": "exact_support_core",
+    "context_view": "context_assisted_core",
+    "review_view": "partial_evidence_review",
+    "path_view": "path_support_core",
+    "no_evidence_view": "no_evidence_queue",
+    "primary_view": "soft_core_balanced"
+  },
+  "runtime": {
+    "api_max_concurrency": 0,
+    "verifier_parallel_workers": 4,
+    "progress_enabled": true,
+    "progress_interval_seconds": 5,
+    "progress_heartbeat_seconds": 30
+  },
+  "entity_first": {
+    "enabled": true,
+    "max_items": 200,
+    "max_chunks": 6,
+    "temperature": 0.0,
+    "selection_policy": "evidence_window_compaction_v1",
+    "relation_batch_policy": "source_paragraph",
+    "relation_parallel_workers": 4,
+    "attach_inventory_nodes": true
+  },
+  "canonical_arbitration": {
+    "enabled": true,
+    "vote_mode": "canonical_document",
+    "relation_role_guard": true,
+    "candidate_conflict_policy": "needs_review",
+    "candidate_cycle_policy": "needs_review",
+    "require_canonical_support": false,
+    "canonical_support_min_documents": 1,
+    "canonical_support_require_direction": true,
+    "max_cycle_length": 12,
+    "max_cycles": 200
+  }
+}

@@ -1,0 +1,51 @@
+PREFIX acc: <https://w3id.org/d2c/acc#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT
+  ?edge ?vote ?direction ?assertions ?documents ?rule
+  ?support_doc ?opposition_doc ?uncertain_doc ?forward_doc ?reverse_doc
+  ?support_votes ?opposition_votes ?direction_rule ?reference_orientation
+  ?vote_source_label ?vote_target_label ?provenance ?doc_vote_detail_json
+  ?vote_edge_id ?edge_source ?edge_target ?edge_source_label ?edge_target_label
+WHERE {
+  ?edge a acc:RetainedEdge ;
+        acc:source ?edge_source ;
+        acc:target ?edge_target .
+  OPTIONAL { ?edge_source acc:label ?edge_source_label . }
+  OPTIONAL { ?edge_target acc:label ?edge_target_label . }
+
+  ?vote a acc:Vote .
+  {
+    ?vote acc:voteEdgeId ?edge .
+  }
+  UNION
+  {
+    FILTER NOT EXISTS { ?vote acc:voteEdgeId ?any_edge . }
+    ?vote acc:pair ?p1, ?p2 .
+    FILTER(?p1 != ?p2)
+    FILTER(
+      (?p1 = ?edge_source && ?p2 = ?edge_target) ||
+      (?p1 = ?edge_target && ?p2 = ?edge_source)
+    )
+  }
+
+  OPTIONAL { ?vote acc:direction ?direction . }
+  OPTIONAL { ?vote acc:assertions ?assertions . }
+  OPTIONAL { ?vote acc:documents ?documents . }
+  OPTIONAL { ?vote acc:rule ?rule . }
+  OPTIONAL { ?vote acc:supportDocument ?support_doc . }
+  OPTIONAL { ?vote acc:oppositionDocument ?opposition_doc . }
+  OPTIONAL { ?vote acc:uncertainDocument ?uncertain_doc . }
+  OPTIONAL { ?vote acc:forwardDocument ?forward_doc . }
+  OPTIONAL { ?vote acc:reverseDocument ?reverse_doc . }
+  OPTIONAL { ?vote acc:supportVoteCount ?support_votes . }
+  OPTIONAL { ?vote acc:oppositionVoteCount ?opposition_votes . }
+  OPTIONAL { ?vote acc:directionRule ?direction_rule . }
+  OPTIONAL { ?vote acc:referenceOrientation ?reference_orientation . }
+  OPTIONAL { ?vote acc:voteSourceLabel ?vote_source_label . }
+  OPTIONAL { ?vote acc:voteTargetLabel ?vote_target_label . }
+  OPTIONAL { ?vote acc:provenance ?provenance . }
+  OPTIONAL { ?vote acc:docVoteDetailJson ?doc_vote_detail_json . }
+  OPTIONAL { ?vote acc:voteEdgeId ?vote_edge_id . }
+}
+ORDER BY ?edge ?vote

@@ -1,0 +1,38 @@
+PREFIX acc: <https://w3id.org/d2c/acc#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT
+  ?edge ?decision ?kind ?rule ?selected ?dropped ?decision_edge_id
+  ?edge_source ?edge_target ?edge_source_label ?edge_target_label
+WHERE {
+  {
+    ?edge a acc:RetainedEdge ;
+          acc:source ?edge_source ;
+          acc:target ?edge_target .
+    ?decision a acc:ConflictDecision ;
+              acc:decisionEdgeId ?edge .
+  }
+  UNION
+  {
+    ?edge a acc:RetainedEdge ;
+          acc:source ?edge_source ;
+          acc:target ?edge_target .
+    ?decision a acc:ConflictDecision .
+    FILTER NOT EXISTS { ?decision acc:decisionEdgeId ?any_edge . }
+    ?decision acc:pair ?p1, ?p2 .
+    FILTER(?p1 != ?p2)
+    FILTER(
+      (?p1 = ?edge_source && ?p2 = ?edge_target) ||
+      (?p1 = ?edge_target && ?p2 = ?edge_source)
+    )
+  }
+
+  OPTIONAL { ?edge_source acc:label ?edge_source_label . }
+  OPTIONAL { ?edge_target acc:label ?edge_target_label . }
+  OPTIONAL { ?decision acc:conflictKind ?kind . }
+  OPTIONAL { ?decision acc:rule ?rule . }
+  OPTIONAL { ?decision acc:selected ?selected . }
+  OPTIONAL { ?decision acc:dropped ?dropped . }
+  OPTIONAL { ?decision acc:decisionEdgeId ?decision_edge_id . }
+}
+ORDER BY ?edge ?decision

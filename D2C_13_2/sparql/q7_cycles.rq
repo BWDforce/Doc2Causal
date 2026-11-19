@@ -1,0 +1,48 @@
+PREFIX acc: <https://w3id.org/d2c/acc#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT
+  ?edge ?decision ?classification ?reason ?removed_edge ?regime_dependent
+  ?decision_edge_id ?edge_source ?edge_target ?edge_source_label ?edge_target_label
+WHERE {
+  ?edge a acc:RetainedEdge ;
+        acc:source ?edge_source ;
+        acc:target ?edge_target .
+  ?decision a acc:CycleDecision .
+
+  OPTIONAL {
+    ?decision acc:decisionEdgeId ?match_decision_edge_id .
+    FILTER(?match_decision_edge_id = ?edge)
+  }
+  OPTIONAL { ?decision acc:decisionEdgeId ?decision_edge_id . }
+  OPTIONAL { ?decision acc:pair ?p1, ?p2 . }
+  OPTIONAL { ?decision acc:removedEdge ?removed_edge . }
+
+  FILTER(
+    BOUND(?match_decision_edge_id)
+    ||
+    (
+      NOT EXISTS { ?decision acc:decisionEdgeId ?any_edge . }
+      &&
+      (
+        (
+          BOUND(?p1) && BOUND(?p2) && ?p1 != ?p2
+          &&
+          (
+            (?p1 = ?edge_source && ?p2 = ?edge_target) ||
+            (?p1 = ?edge_target && ?p2 = ?edge_source)
+          )
+        )
+        ||
+        (BOUND(?removed_edge) && STR(?removed_edge) = STR(?edge))
+      )
+    )
+  )
+
+  OPTIONAL { ?edge_source acc:label ?edge_source_label . }
+  OPTIONAL { ?edge_target acc:label ?edge_target_label . }
+  OPTIONAL { ?decision acc:classification ?classification . }
+  OPTIONAL { ?decision acc:reason ?reason . }
+  OPTIONAL { ?decision acc:regimeDependent ?regime_dependent . }
+}
+ORDER BY ?edge ?decision

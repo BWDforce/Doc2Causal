@@ -1,0 +1,113 @@
+{
+  "version": "D2C_13_2",
+  "baseline_experiment": "exp18",
+  "baseline_method": "D2C_12_1",
+  "runs": 18,
+  "f1": {
+    "water": {
+      "raw": {
+        "precision": 0.9103,
+        "recall": 0.9057,
+        "f1": 0.908
+      },
+      "pre_verification": {
+        "precision": 0.945,
+        "recall": 0.8973,
+        "f1": 0.9206
+      },
+      "soft_core_balanced": {
+        "precision": 0.9237,
+        "recall": 0.9175,
+        "f1": 0.9206
+      },
+      "support_aware_core": {
+        "precision": 0.9275,
+        "recall": 0.8401,
+        "f1": 0.8816
+      },
+      "direct_core": {
+        "precision": 0.9467,
+        "recall": 0.7778,
+        "f1": 0.854
+      },
+      "verified_core": {
+        "precision": 0.9487,
+        "recall": 0.7778,
+        "f1": 0.8548
+      }
+    },
+    "win95pts": {
+      "raw": {
+        "precision": 0.8817,
+        "recall": 0.8502,
+        "f1": 0.8657
+      },
+      "pre_verification": {
+        "precision": 0.8715,
+        "recall": 0.8075,
+        "f1": 0.8383
+      },
+      "soft_core_balanced": {
+        "precision": 0.8816,
+        "recall": 0.8423,
+        "f1": 0.8615
+      },
+      "support_aware_core": {
+        "precision": 0.8915,
+        "recall": 0.8234,
+        "f1": 0.8561
+      },
+      "direct_core": {
+        "precision": 0.939,
+        "recall": 0.6875,
+        "f1": 0.7938
+      },
+      "verified_core": {
+        "precision": 0.9385,
+        "recall": 0.6815,
+        "f1": 0.7897
+      }
+    }
+  },
+  "artifact_sha256": {
+    "water/run_01": "0be55101ffa701dc4f098cd5a3a7eb01c2038d3f1ecf32208600f2d78519b8e7",
+    "water/run_02": "eac57a157dbd0a757c46bf7dfe978781f86133931c0a47345f79d545fb9077ea",
+    "water/run_03": "2d374d2a4725dd2b8056bcdf9d091c470b8c34ac26f9214f25d947dab834acb2",
+    "water/run_04": "e1c7f043ae309a01fd351d0f5a1a691286ab770b72e21bb5d62683d0ac764fa7",
+    "water/run_05": "f71d2f18860c56114a9c64afcec3d02e227a9c4e9f712729f856a097461d4504",
+    "water/run_06": "d0fc8c190adec637a19d4a0ff8f1e794772bd9ae96fd215e89c3f0d5d8570654",
+    "water/run_07": "bc5d56d24b154aa6d755e2334882a5083daaf5c05fe6dbe28962000562219696",
+    "water/run_08": "c8f89792249a2a6731bf0da1c4711d79c8360bbd694c2439fef06e115e35c1c4",
+    "water/run_09": "ceb94cb5df6522cada24138414623ff4b3cfdb1641747e115754107efdbe873a",
+    "win95pts/run_01": "1af685a164aaf6ccc6e8b7c4bdcdf636bb7b64fc484c376454a946b10b9ef9bb",
+    "win95pts/run_02": "1e42317f20998640f4e782c9d412745e134bcd9be0014b41864f377862c7560b",
+    "win95pts/run_03": "e06a7bb8b5126159edcd3ca7e199045c74de51c1decddd72be1704f8d913f84d",
+    "win95pts/run_04": "d5d5130f634d11312ad864dac6362a515942f4fab103adbb10e52b4cdc94e4ab",
+    "win95pts/run_05": "8af48c31def726c58a35784b0b81c06be0c0d4671296e5f18a1d7b6e38f8b1a6",
+    "win95pts/run_06": "149a08fc1d9d6fedc1cb8e8ec39e597aeed7fc2be56a817b7c1437188a63adc8",
+    "win95pts/run_07": "98e9cc03d25b4adfa11c039f5351935feea0d349dc0e3a01ed77e3829a0a2ce0",
+    "win95pts/run_08": "07adde0739827fc3d1a5cf83d420c767615f1c3e3424d58df16a961cbd2788e5",
+    "win95pts/run_09": "5ec6f15a227f0b77d39ff3b2c1df2414863e0191148e1b1750f7e7257883dffb"
+  },
+  "audit_reports": {
+    "water/run_01": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\water\\run_01\\audit_report.json",
+    "water/run_02": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\water\\run_02\\audit_report.json",
+    "water/run_03": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\water\\run_03\\audit_report.json",
+    "water/run_04": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\water\\run_04\\audit_report.json",
+    "water/run_05": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\water\\run_05\\audit_report.json",
+    "water/run_06": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\water\\run_06\\audit_report.json",
+    "water/run_07": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\water\\run_07\\audit_report.json",
+    "water/run_08": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\water\\run_08\\audit_report.json",
+    "water/run_09": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\water\\run_09\\audit_report.json",
+    "win95pts/run_01": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\win95pts\\run_01\\audit_report.json",
+    "win95pts/run_02": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\win95pts\\run_02\\audit_report.json",
+    "win95pts/run_03": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\win95pts\\run_03\\audit_report.json",
+    "win95pts/run_04": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\win95pts\\run_04\\audit_report.json",
+    "win95pts/run_05": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\win95pts\\run_05\\audit_report.json",
+    "win95pts/run_06": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\win95pts\\run_06\\audit_report.json",
+    "win95pts/run_07": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\win95pts\\run_07\\audit_report.json",
+    "win95pts/run_08": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\win95pts\\run_08\\audit_report.json",
+    "win95pts/run_09": "D:\\causal extract\\causal-cartographer\\nova_exp\\audit_d2c13_2_exp18\\win95pts\\run_09\\audit_report.json"
+  },
+  "baseline_report": "nova_exp/exp18/replay_comparison.md"
+}

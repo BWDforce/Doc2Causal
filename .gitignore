@@ -1,16 +1,47 @@
-﻿__pycache__/
-*.pyc
+# Python
+__pycache__/
+*.py[cod]
 *.pyo
-results/
-output/
-output_gen2/
-descriptions/
-_test*/
-test_output/
+*.pyd
+.venv/
+venv/
+env/
+*.egg-info/
+.eggs/
+build/
+dist/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Generated experiment outputs
+D2C_13_2/.cache/
+**/runner_logs/
+**/roundtrip/
+**/lang7/
+nova_exp/
+CSB_exp/
+outputs/
 data/
-logs/
+results/
 *.log
 *.gml
 *.png
+*.tmp
+*.bak
+
+# API credentials and local state
+.env
+.env.*
+*.secret
+config.local.json
+
+# Editors and OS files
 .idea/
 .vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+__pycache__
